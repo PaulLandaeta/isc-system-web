@@ -1,2 +1,3 @@
 - Paul Landaeta
+- Alexia Marin
 - Luis Callapa
