@@ -1,1 +1,2 @@
 - Paul Landaeta
+- Ernesto Juarez
