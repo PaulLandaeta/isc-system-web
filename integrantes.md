@@ -2,3 +2,4 @@
 - Alexia Marin
 - Miguel Quenta
 - Adrian Sanchez
+- Mariana Del Arroyo  
