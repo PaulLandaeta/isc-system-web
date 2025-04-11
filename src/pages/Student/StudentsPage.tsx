@@ -46,81 +46,6 @@ const StudentPage = () => {
     fetchStudents();
   }, []);
 
-  const columns: GridColDef[] = [
-    {
-      field: "code",
-      headerName: "Código",
-      headerAlign: "center",
-      align: "center",
-      flex: 1,
-    },
-    {
-      field: "name",
-      headerName: "Nombre Completo",
-      headerAlign: "center",
-      align: "center",
-      flex: 1,
-    },
-    {
-      field: "email",
-      headerName: "Correo",
-      headerAlign: "center",
-      align: "center",
-      flex: 1,
-    },
-    {
-      field: "phone",
-      headerName: "Celular",
-      type: "number",
-      headerAlign: "center",
-      align: "center",
-      flex: 1,
-    },
-    {
-      field: "actions",
-      headerName: "Acciones",
-      headerAlign: "center",
-      align: "center",
-      flex: 1,
-      renderCell: (params) => (
-        <div>
-          {HasPermission(viewStudentReportPermission?.name || "") && (
-          <IconButton
-            color="primary"
-            aria-label="ver"
-            onClick={() => handleView(params.row.id)}
-          >
-            <VisibilityIcon />
-          </IconButton>
-          )}
-          {HasPermission(editStudentPermission?.name || "") && (
-          <IconButton
-            color="primary"
-            aria-label="editar"
-            onClick={() => handleEdit(params.row.id)}
-          >
-            <EditIcon />
-          </IconButton>
-          )}
-          {HasPermission(deleteStudentPermission?.name || "") && (
-          <IconButton
-            color="secondary"
-            aria-label="eliminar"
-            onClick={() => handleClickOpen(params.row.id)}
-          >
-            <DeleteIcon />
-          </IconButton>
-          )}
-          
-        </div>
-      ),
-    },
-  ];
-
-  const handleCreateTeacher = () => {
-    navigate("/create-student");
-  };
-
   const fetchStudents = async () => {
     const students = await getStudents();
     setStudents(students.data);
@@ -164,21 +89,97 @@ const StudentPage = () => {
     }
   };
 
+  const baseColumns: GridColDef[] = [
+    {
+      field: "code",
+      headerName: "Código",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+    },
+    {
+      field: "name",
+      headerName: "Nombre Completo",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+    },
+    {
+      field: "email",
+      headerName: "Correo",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+    },
+    {
+      field: "phone",
+      headerName: "Celular",
+      type: "number",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+    },
+    {
+      field: "actions",
+      headerName: "Acciones",
+      headerAlign: "center",
+      align: "center",
+      flex: 1,
+      renderCell: (params) => (
+        <div>
+          {HasPermission(viewStudentReportPermission?.name || "") && (
+            <IconButton
+              color="primary"
+              aria-label="ver"
+              onClick={() => handleView(params.row.id)}
+            >
+              <VisibilityIcon />
+            </IconButton>
+          )}
+          {HasPermission(editStudentPermission?.name || "") && (
+            <IconButton
+              color="primary"
+              aria-label="editar"
+              onClick={() => handleEdit(params.row.id)}
+            >
+              <EditIcon />
+            </IconButton>
+          )}
+          {HasPermission(deleteStudentPermission?.name || "") && (
+            <IconButton
+              color="secondary"
+              aria-label="eliminar"
+              onClick={() => handleClickOpen(params.row.id)}
+            >
+              <DeleteIcon />
+            </IconButton>
+          )}
+        </div>
+      ),
+    },
+  ];
+
+  const columns: GridColDef[] = baseColumns.map(col => ({
+    ...col,
+    sortable: false,
+    filterable: false,
+  }));
+
   return (
     <ContainerPage
       title={"Estudiantes"}
       subtitle={"Lista de estudiantes"}
       actions={
         HasPermission(addStudentPermission?.name || "") && (
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={handleCreateTeacher}
-          startIcon={<AddIcon />}
-          disabled={!addStudentPermission}
-        >
-          Agregar Estudiante
-        </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => navigate("/create-student")}
+            startIcon={<AddIcon />}
+            disabled={!addStudentPermission}
+          >
+            Agregar Estudiante
+          </Button>
         )
       }
       children={
@@ -194,7 +195,7 @@ const StudentPage = () => {
             }}
             classes={{
               root: "bg-white dark:bg-gray-800",
-              columnHeader: "bg-gray-200 dark:bg-gray-800 ",
+              columnHeader: "bg-gray-200 dark:bg-gray-800",
               cell: "bg-white dark:bg-gray-800",
               row: "bg-white dark:bg-gray-800",
               columnHeaderTitle: "!font-bold text-center",
@@ -227,7 +228,7 @@ const StudentPage = () => {
           </Dialog>
         </div>
       }
-    ></ContainerPage>
+    />
   );
 };
 
