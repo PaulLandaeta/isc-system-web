@@ -19,22 +19,35 @@ import ErrorDialog from "../../components/common/ErrorDialog";
 import { createIntern } from "../../services/internService";
 
 const validationSchema = Yup.object({
-  name: Yup.string().required("El nombre completo es obligatorio"),
-  lastname: Yup.string().required("El apellido es obligatorio"),
-  mothername: Yup.string().required("El apellido materno es obligatorio"),
+  name: Yup.string()
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, "El nombre solo puede contener letras")
+    .max(20, "El nombre no puede tener más de 20 caracteres")
+    .required("El nombre completo es obligatorio"),
+  lastname: Yup.string()
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, "El apellido solo puede contener letras")
+    .max(20, "El apellido no puede tener más de 20 caracteres")
+    .required("El apellido es obligatorio"),
+  mothername: Yup.string()
+    .matches(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, "El apellido materno solo puede contener letras")
+    .max(20, "El apellido materno no puede tener más de 20 caracteres")
+    .required("El apellido materno es obligatorio"),
   email: Yup.string()
     .email("Ingrese un correo electrónico válido")
     .required("El correo electrónico es obligatorio"),
   phone: Yup.string()
     .matches(/^[0-9]{8}$/, "Ingrese un número de teléfono válido")
     .optional(),
-  code: Yup.string().optional(),
+  code: Yup.string()
+    .matches(/^[0-9]{1,8}$/, "El código debe tener máximo 8 dígitos numéricos")
+    .optional(),
   isIntern: Yup.boolean(),
-  total_hours: Yup.number().when("isIntern", (isIntern, schema) => {
-    return isIntern
-      ? schema.required("Las horas becarias son obligatorias")
-      : schema.nullable();
-  }),
+  total_hours: Yup.number()
+    .min(0, "Las horas becarias no pueden ser negativas")
+    .when("isIntern", {
+      is: true,
+      then: (schema) => schema.required("Las horas becarias son obligatorias"),
+      otherwise: (schema) => schema.nullable(),
+    }),
 });
 
 const CreateStudentPage = () => {
@@ -44,13 +57,8 @@ const CreateStudentPage = () => {
   const [message, setMessage] = useState("");
   const [severity, setSeverity] = useState<"success" | "error">("success");
 
-  const sucessDialogClose = () => {
-    setSuccessDialog(false);
-  };
-
-  const errorDialogClose = () => {
-    setErrorDialog(false);
-  };
+  const sucessDialogClose = () => setSuccessDialog(false);
+  const errorDialogClose = () => setErrorDialog(false);
 
   const formik = useFormik({
     initialValues: {
@@ -59,7 +67,7 @@ const CreateStudentPage = () => {
       mothername: "",
       email: "",
       phone: "",
-      code: 0,
+      code: "",
       isIntern: false,
       total_hours: 0,
     },
@@ -75,8 +83,7 @@ const CreateStudentPage = () => {
             pending_hours: 0,
           });
         } else {
-          // @ts-ignore
-          await createStudent(rest);
+          await createStudent({ ...rest, id: 0, code: Number(rest.code) });
         }
         setMessage("Estudiante creado con éxito");
         setSeverity("success");
@@ -84,7 +91,7 @@ const CreateStudentPage = () => {
         resetForm();
       } catch (error) {
         // @ts-ignore
-        setMessage(error.response.data.message);
+        setMessage(error.response?.data?.message || "Error al crear estudiante");
         setSeverity("error");
         setErrorDialog(true);
       }
@@ -95,9 +102,7 @@ const CreateStudentPage = () => {
     _event: React.SyntheticEvent | Event,
     reason?: string
   ) => {
-    if (reason === "clickaway") {
-      return;
-    }
+    if (reason === "clickaway") return;
     setOpen(false);
   };
 
@@ -192,7 +197,7 @@ const CreateStudentPage = () => {
                     <TextField
                       id="code"
                       name="code"
-                      label="Codigo de Estudiante"
+                      label="Código de Estudiante"
                       variant="outlined"
                       fullWidth
                       value={formik.values.code}
@@ -200,7 +205,7 @@ const CreateStudentPage = () => {
                       error={formik.touched.code && Boolean(formik.errors.code)}
                       helperText={formik.touched.code && formik.errors.code}
                       margin="normal"
-                      inputProps={{ maxLength: 10 }}
+                      inputProps={{ maxLength: 8 }}
                     />
                   </Grid>
                 </Grid>
@@ -245,6 +250,7 @@ const CreateStudentPage = () => {
             </Grid>
             <Divider flexItem sx={{ mt: 2, mb: 2 }} />
           </Grid>
+
           <Grid item xs={12}>
             <Grid container spacing={2} sx={{ padding: 2 }}>
               <Grid item xs={3}>
@@ -263,6 +269,7 @@ const CreateStudentPage = () => {
               </Grid>
             </Grid>
           </Grid>
+
           {formik.values.isIntern && (
             <Grid item xs={12}>
               <Grid container spacing={2} sx={{ padding: 2 }}>
@@ -283,11 +290,13 @@ const CreateStudentPage = () => {
                       formik.touched.total_hours && formik.errors.total_hours
                     }
                     margin="normal"
+                    inputProps={{ min: 0 }}
                   />
                 </Grid>
               </Grid>
             </Grid>
           )}
+
           <Grid item xs={12}>
             <Grid container spacing={2} justifyContent="flex-end">
               <Grid item>
@@ -299,6 +308,7 @@ const CreateStudentPage = () => {
           </Grid>
         </Grid>
       </form>
+
       <Snackbar
         open={open}
         autoHideDuration={6000}
@@ -309,6 +319,7 @@ const CreateStudentPage = () => {
           {message}
         </Alert>
       </Snackbar>
+
       <SuccessDialog
         open={successDialog}
         onClose={sucessDialogClose}
