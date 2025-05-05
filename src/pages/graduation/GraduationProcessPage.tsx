@@ -6,7 +6,7 @@ import { Student } from "../../models/studentInterface";
 import { getPermissionById } from "../../services/permissionsService";
 import { Permission } from "../../models/permissionInterface";
 import { HasPermission } from "../../helper/permissions";
-import { Box, Button, IconButton, Paper } from "@mui/material";
+import { Box, Button, IconButton, Paper, Stack, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -14,7 +14,7 @@ import dataGridLocaleText from "../../locales/datagridLocaleEs";
 import ContainerPage from "../../components/common/ContainerPage";
 import ProcessForm from "../CreateGraduation/components/ProcessForm";
 
-const GraduationProcessPage = () => {
+const GraduationProcessPage: React.FC = () => {
   const [filteredData, setFilteredData] = useState<Student[] | []>([]);
   const [search, setSearch] = useState("");
   const [open,setOpen] = useState(false);
@@ -29,18 +29,18 @@ const GraduationProcessPage = () => {
   const [createProcess, setCreateProcess] = useState<Permission>();
 
   useEffect(() => {
-    const fetchCreateProcess = async () => {
+    (async () => {
       const response = await getPermissionById(3);
       setCreateProcess(response.data[0]);
-    };
-    fetchCreateProcess();
+    })();
   }, []);
 
   useEffect(() => {
-    const results = students.filter((item: Student) =>
-      item.student_name.toLowerCase().includes(search.toLowerCase())
+    setFilteredData(
+      students.filter((item) =>
+        item.student_name.toLowerCase().includes(search.toLowerCase())
+      )
     );
-    setFilteredData(results);
   }, [search, students]);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -107,55 +107,71 @@ const GraduationProcessPage = () => {
   ];
 
   return (
-    <ContainerPage
-      title="Procesos de Graduación"
-      subtitle="Lista de procesos de graduación de los estudiantes"
-      actions={
-        HasPermission(createProcess?.name || "") && (
+    <Box sx={{ p: 3 }}>
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        justifyContent="space-between"
+        alignItems="center"
+        flexWrap="wrap"
+        spacing={2}
+        sx={{ mb: 4 }}
+      >
+        <Box>
+          <Typography variant="h4">Procesos de Graduación</Typography>
+          <Typography variant="subtitle1" color="textSecondary">
+            Lista de procesos de graduación de los estudiantes
+          </Typography>
+        </Box>
+        {HasPermission(createProcess?.name || "") && (
           <Button
             variant="contained"
             color="secondary"
-            onClick={goToCreateProcessPage}
+            onClick={handleOpen}
             startIcon={<AddIcon />}
+            sx={{ whiteSpace: "nowrap" }}
           >
             Nuevo Proceso
           </Button>
-        )
-      }
-    >
-      <div className="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between mb-4">
-        <label htmlFor="table-search" className="sr-only">
-          Buscar
-        </label>
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 flex items-center ps-3 pointer-events-none">
-            <FaSearch className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-          </div>
-          <input
-            type="text"
-            id="table-search"
-            className="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-            placeholder="Buscar por nombre de estudiante"
-            value={search}
-            onChange={handleSearchChange}
-          />
-        </div>
-      </div>
-
-      <Box sx={{ mb: 2 }}>
+        )}
+      </Stack>
+        <Box className="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between mb-4">
+          <label htmlFor="table-search" className="sr-only">
+            Buscar
+          </label>
+          <Box sx={{ position: "relative" }}>
+            <Box
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: "0.75rem", 
+                transform: "translateY(-50%)",
+                pointerEvents: "none",
+              }}
+            >
+              <FaSearch className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            </Box>
+            <input
+              type="text"
+              id="table-search"
+              className="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              placeholder="Buscar por nombre de estudiante"
+              value={search}
+              onChange={handleSearchChange}
+            />
+          </Box>
+        </Box>
+      <Box sx={{ mb: 2, overflowX: "auto" }}>
         <Paper>
           <DataGrid
+            autoHeight
             rows={filteredData}
             columns={tableHeaders}
             localeText={dataGridLocaleText}
-            initialState={{
-              pagination: {
-                paginationModel: { page: 0, pageSize: 5 },
-              },
-            }}
+            initialState={{ pagination: { paginationModel: { page: 0, pageSize: 5 } } }}
             pageSizeOptions={[5, 10, 25]}
             disableRowSelectionOnClick
             sx={{
+              minWidth: 600,
               "& .MuiDataGrid-columnHeaders": {
                 backgroundColor: "#e5e7eb",
               },
@@ -192,13 +208,9 @@ const GraduationProcessPage = () => {
           />
         </Paper>
       </Box>
-      <ProcessForm
-        isVisible={open}
-        isClosed={handleClose}
-      >
-      </ProcessForm>
-    </ContainerPage>
+      <ProcessForm isVisible={open} isClosed={handleClose} />
+    </Box>
   );
-};
+};  
 
 export default GraduationProcessPage;
