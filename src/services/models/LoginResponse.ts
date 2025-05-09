@@ -1,4 +1,5 @@
 import { Permission } from '../../models/permissionInterface';
+import { MenuCategory } from '../../models/menuModel';
 
 export interface LoginResponse {
   token: string;
@@ -26,4 +27,5 @@ export interface UserResponse {
   updated_at: string; // Puede ser `Date` si necesitas manipular las fechas
   code: string;
   token: string;
+  menu: MenuCategory[];
 }
