@@ -9,11 +9,12 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
 import { Divider, ListItemButton } from "@mui/material";
+import { useUserDataStore } from "../store/store";
+import ListSubheader from "@mui/material/ListSubheader";
+import EventIcon from "@mui/icons-material/Event";
 
 import UPB_LOGO from "../assets/upb_logo.png";
-import { menu } from "../constants/menu";
 import { useUserStore } from "../store/store";
-
 const drawerWidth = 240;
 
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -85,9 +86,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
       user.roles.push(user?.roles_permissions[key].role_name);
   }
 
-  const filteredMenu = menu.filter((item) =>
-    item.roles?.some((role) => user?.roles?.includes(role))
-  );
+  const menuData = useUserDataStore((state) => state.menu);
 
   return (
     <Drawer variant="permanent" open={open}>
@@ -104,35 +103,42 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
       </DrawerHeader>
       <Divider />
       <List>
-        {filteredMenu.map((item) => {
+        {menuData.map((group) => {
           return (
-            <ListItem key={item.key} disablePadding sx={{ display: "block" }}>
-              <ListItemButton
-                data-test-id="sidebar-list-button"
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                }}
-                onClick={() => goToPage(item.path)}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  }}
-                >
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText
-                  data-test-id="sidebar-list-title"
-                  color="primary"
-                  primary={item.text}
-                  sx={{ opacity: open ? 1 : 0 }}
-                />
-              </ListItemButton>
-            </ListItem>
+            <>
+              {open && <ListSubheader> {group.category} </ListSubheader>}
+              {group.items.map((item) => {
+                return (
+                  <ListItem key={item.name} disablePadding sx={{ display: "block" }}>
+                    <ListItemButton
+                      data-test-id="sidebar-list-button"
+                      sx={{
+                        minHeight: 48,
+                        justifyContent: open ? "initial" : "center",
+                        px: 2.5,
+                      }}
+                      onClick={() => goToPage(item.path)}
+                    >
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          mr: open ? 3 : "auto",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <EventIcon />
+                      </ListItemIcon>
+                      <ListItemText
+                        data-test-id="sidebar-list-title"
+                        color="primary"
+                        primary={item.displayname}
+                        sx={{ opacity: open ? 1 : 0 }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                );
+              })}
+            </>
           );
         })}
       </List>
