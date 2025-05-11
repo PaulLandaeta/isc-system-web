@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import ChecklistOutlinedIcon from "@mui/icons-material/ChecklistOutlined";
@@ -13,114 +14,105 @@ import ViewListIcon from "@mui/icons-material/ViewList";
 import HistoryIcon from "@mui/icons-material/History";
 import InsertInvitationIcon from "@mui/icons-material/InsertInvitation";
 
-import { roles } from "./roles";
-const { ADMIN, PROFESSOR, STUDENT, INTERN, PROGRAM_DIRECTOR, SUPERVISOR } = roles;
-export const menu = [
-  // TODO: check roles on sidebar
-  {
-    key: "users",
-    path: "/users",
-    text: "Usuarios",
-    icon: <SwitchAccountIcon color="primary" />,
-    roles: [ADMIN],
-  },
-  {
-    key: "students",
-    path: "/students",
-    text: "Estudiantes",
-    icon: <SchoolOutlinedIcon color="primary" />,
-    roles: [PROFESSOR, PROGRAM_DIRECTOR],
-  },
-  {
-    key: "professors",
-    path: "/professors",
-    text: "Docentes",
-    icon: <SupervisorAccountIcon color="primary" />,
-    roles: [PROFESSOR, STUDENT],
-  },
-  {
-    key: "process",
-    path: "/process",
-    text: "Procesos",
-    icon: <ChecklistOutlinedIcon color="primary" />,
-    roles: [ADMIN, PROGRAM_DIRECTOR, PROFESSOR, STUDENT],
-  },
-  {
-    key: "events",
-    path: "/events",
-    text: "Eventos",
-    icon: <EventIcon color="primary" />,
-    roles: [ADMIN, STUDENT, INTERN, SUPERVISOR],
-  },
-  {
-    key: "hours",
-    path: "/scholarshipHours",
-    text: "Horas",
-    icon: <AccessTimeIcon color="primary" />,
-    roles: [STUDENT, INTERN, SUPERVISOR],
-  },
-  {
-    key: "programDirector",
-    path: "/programDirector",
-    text: "Lista de Eventos",
-    icon: <EmojiPeopleIcon color="primary" />,
-    roles: [ADMIN, PROGRAM_DIRECTOR],
-  },
-  {
-    key: "supervisor",
-    path: "/supervisor",
-    text: "Supervisor",
-    icon: <SupervisedUserCircleIcon color="primary" />,
-    roles: [SUPERVISOR],
-  },
-  {
-    key: "CompleteScholarship",
-    path: "/CompleteScholarshipHour",
-    text: "Eventos",
-    icon: <PendingActionsIcon color="primary" />,
-    roles: [ADMIN, PROGRAM_DIRECTOR],
-  },
-  {
-    key: "administration",
-    path: "/administration",
-    text: "Roles y permisos",
-    icon: <ManageAccountsIcon color="primary" />,
-    roles: [ADMIN],
-  },
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import { Divider, ListItemButton } from "@mui/material";
+import ListSubheader from "@mui/material/ListSubheader";
 
-  {
-    key: "viewInterns",
-    path: "/eventsByInterns",
-    text: "Inscritos",
-    icon: <ViewListIcon color="primary" />,
-    roles: [ADMIN, PROGRAM_DIRECTOR, PROFESSOR],
-  },
-  {
-    key: "dashboard",
-    path: "/dashboard",
-    text: "Dashboard",
-    icon: <HomeIcon color="primary" />,
-    roles: [ADMIN, PROGRAM_DIRECTOR, PROFESSOR, STUDENT],
-  },
-  {
-    key: "eventHistory",
-    path: "/eventHistory",
-    text: "Historial",
-    icon: <HistoryIcon color="primary" />,
-    roles: [ADMIN, STUDENT, INTERN, SUPERVISOR],
-  },
-  {
-    key: "preInscriptions",
-    path: "/preInscriptions",
-    text: "Pre-Inscripciones",
-    icon: <InsertInvitationIcon color="primary" />,
-    roles: [STUDENT, INTERN, SUPERVISOR],
-  },
-  {
-    key: "create-student",
-    path: "/create-student",
-    text: "Crear Becario",
-    icon: <InsertInvitationIcon color="primary" />,
-    roles: [ADMIN, PROGRAM_DIRECTOR],
-  },
-];
+import { useUserDataStore } from "../store/store";
+interface MenuProps {
+  open: boolean;
+}
+
+const Menu: React.FC<MenuProps> = ({ open }) => {
+  const navigate = useNavigate();
+
+  const goToPage = (path: string) => {
+    navigate(path);
+  };
+
+  const menuData = useUserDataStore((state) => state.menu);
+
+  const getItemIcon = (icon: string) => {
+    switch (icon) {
+      case "Home":
+        return <HomeIcon color="primary" />;
+      case "SupervisorAccount":
+        return <SupervisorAccountIcon color="primary" />;
+      case "ChecklistOutlined":
+        return <ChecklistOutlinedIcon color="primary" />;
+      case "ManageAccounts":
+        return <ManageAccountsIcon color="primary" />;
+      case "SchoolOutlined":
+        return <SchoolOutlinedIcon color="primary" />;
+      case "EmojiPeople":
+        return <EmojiPeopleIcon color="primary" />;
+      case "AccessTime":
+        return <AccessTimeIcon color="primary" />;
+      case "SwitchAccount":
+        return <SwitchAccountIcon color="primary" />;
+      case "SupervisedUserCircle":
+        return <SupervisedUserCircleIcon color="primary" />;
+      case "PendingActions":
+        return <PendingActionsIcon color="primary" />;
+      case "Event":
+        return <EventIcon color="primary" />;
+      case "ViewList":
+        return <ViewListIcon color="primary" />;
+      case "History":
+        return <HistoryIcon color="primary" />;
+      case "InsertInvitation":
+        return <InsertInvitationIcon color="primary" />;
+      default:
+        return <ChecklistOutlinedIcon color="primary" />;
+    }
+  };
+
+  return (
+    <List>
+      {menuData.map((group) => {
+        return (
+          <>
+            {open && <ListSubheader> {group.category} </ListSubheader>}
+            {!open && <Divider />}
+            {group.items.map((item) => {
+              return (
+                <ListItem key={item.name} disablePadding sx={{ display: "block" }}>
+                  <ListItemButton
+                    data-test-id="sidebar-list-button"
+                    sx={{
+                      minHeight: 48,
+                      justifyContent: open ? "initial" : "center",
+                      px: 2.5,
+                    }}
+                    onClick={() => goToPage(item.path)}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 3 : "auto",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {getItemIcon(item.icon)}
+                    </ListItemIcon>
+                    <ListItemText
+                      data-test-id="sidebar-list-title"
+                      color="primary"
+                      primary={item.displayname}
+                      sx={{ opacity: open ? 1 : 0 }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              );
+            })}
+          </>
+        );
+      })}
+    </List>
+  );
+};
+
+export default Menu;
