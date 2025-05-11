@@ -7,4 +7,5 @@ export interface MenuItem {
   name: string;
   path: string;
   displayname: string;
+  icon: string;
 }

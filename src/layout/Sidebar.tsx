@@ -11,7 +11,20 @@ import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
 import { Divider, ListItemButton } from "@mui/material";
 import { useUserDataStore } from "../store/store";
 import ListSubheader from "@mui/material/ListSubheader";
+import HomeIcon from "@mui/icons-material/Home";
+import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
+import ChecklistOutlinedIcon from "@mui/icons-material/ChecklistOutlined";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
+import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import SwitchAccountIcon from "@mui/icons-material/SwitchAccount";
+import SupervisedUserCircleIcon from "@mui/icons-material/SupervisedUserCircle";
+import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import EventIcon from "@mui/icons-material/Event";
+import ViewListIcon from "@mui/icons-material/ViewList";
+import HistoryIcon from "@mui/icons-material/History";
+import InsertInvitationIcon from "@mui/icons-material/InsertInvitation";
 
 import UPB_LOGO from "../assets/upb_logo.png";
 import { useUserStore } from "../store/store";
@@ -88,6 +101,41 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
 
   const menuData = useUserDataStore((state) => state.menu);
 
+  const getItemIcon = (icon: string) => {
+    switch (icon) {
+      case "Home":
+        return <HomeIcon color="primary" />;
+      case "SupervisorAccount":
+        return <SupervisorAccountIcon color="primary" />;
+      case "ChecklistOutlined":
+        return <ChecklistOutlinedIcon color="primary" />;
+      case "ManageAccounts":
+        return <ManageAccountsIcon color="primary" />;
+      case "SchoolOutlined":
+        return <SchoolOutlinedIcon color="primary" />;
+      case "EmojiPeople":
+        return <EmojiPeopleIcon color="primary" />;
+      case "AccessTime":
+        return <AccessTimeIcon color="primary" />;
+      case "SwitchAccount":
+        return <SwitchAccountIcon color="primary" />;
+      case "SupervisedUserCircle":
+        return <SupervisedUserCircleIcon color="primary" />;
+      case "PendingActions":
+        return <PendingActionsIcon color="primary" />;
+      case "Event":
+        return <EventIcon color="primary" />;
+      case "ViewList":
+        return <ViewListIcon color="primary" />;
+      case "History":
+        return <HistoryIcon color="primary" />;
+      case "InsertInvitation":
+        return <InsertInvitationIcon color="primary" />;
+      default:
+        return <ChecklistOutlinedIcon color="primary" />;
+    }
+  };
+
   return (
     <Drawer variant="permanent" open={open}>
       <DrawerHeader>
@@ -107,6 +155,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
           return (
             <>
               {open && <ListSubheader> {group.category} </ListSubheader>}
+              {!open && <Divider />}
               {group.items.map((item) => {
                 return (
                   <ListItem key={item.name} disablePadding sx={{ display: "block" }}>
@@ -126,7 +175,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
                           justifyContent: "center",
                         }}
                       >
-                        <EventIcon />
+                        {getItemIcon(item.icon)}
                       </ListItemIcon>
                       <ListItemText
                         data-test-id="sidebar-list-title"
