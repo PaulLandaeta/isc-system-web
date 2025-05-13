@@ -1,19 +1,13 @@
-import { useNavigate } from "react-router-dom";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
 import MuiDrawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
-import { Divider, ListItemButton } from "@mui/material";
+import { Divider } from "@mui/material";
 
 import UPB_LOGO from "../assets/upb_logo.png";
-import { menu } from "../constants/menu";
 import { useUserStore } from "../store/store";
-
+import Menu from "../constants/menu";
 const drawerWidth = 240;
 
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -70,24 +64,15 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
   const user = useUserStore((state) => state.user);
   const theme = useTheme();
-  const navigate = useNavigate();
 
   const handleDrawerClose = () => {
     setOpen(false);
-  };
-
-  const goToPage = (path: string) => {
-    navigate(path);
   };
 
   for (const key in user?.roles_permissions) {
     if (!user.roles.some((role) => role == user?.roles_permissions[key].role_name))
       user.roles.push(user?.roles_permissions[key].role_name);
   }
-
-  const filteredMenu = menu.filter((item) =>
-    item.roles?.some((role) => user?.roles?.includes(role))
-  );
 
   return (
     <Drawer variant="permanent" open={open}>
@@ -103,39 +88,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
         </IconButton>
       </DrawerHeader>
       <Divider />
-      <List>
-        {filteredMenu.map((item) => {
-          return (
-            <ListItem key={item.key} disablePadding sx={{ display: "block" }}>
-              <ListItemButton
-                data-test-id="sidebar-list-button"
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
-                }}
-                onClick={() => goToPage(item.path)}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  }}
-                >
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText
-                  data-test-id="sidebar-list-title"
-                  color="primary"
-                  primary={item.text}
-                  sx={{ opacity: open ? 1 : 0 }}
-                />
-              </ListItemButton>
-            </ListItem>
-          );
-        })}
-      </List>
+      <Menu open={open} />
     </Drawer>
   );
 };
