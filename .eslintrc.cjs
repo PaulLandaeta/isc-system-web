@@ -4,6 +4,7 @@ module.exports = {
     browser: true,
     es2020: true,
     jest: true,
+    "cypress/globals": true
   },
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -23,6 +24,7 @@ module.exports = {
     'unused-imports',
     'promise',
     'security',
+    "cypress",
     'jest',
     'sonarjs'
   ],
@@ -35,8 +37,9 @@ module.exports = {
     'plugin:import/errors',
     'plugin:import/warnings',
     'plugin:import/typescript',
-    'airbnb-base',
+    'airbnb',
     'plugin:jest/recommended',
+    'plugin:cypress/recommended',
     'prettier',
   ],
   ignorePatterns: [
@@ -115,5 +118,8 @@ module.exports = {
     'react/jsx-indent': ['error', 2],
     'react/jsx-indent-props': ['error', 2],
     'react/jsx-equals-spacing': ['error', 'always'],
+    "react/jsx-filename-extension": ["error", { "extensions": [".js", ".jsx", ".tsx"] }],
+    "jest/expect-expect": "off",
+    "no-shadow": "off"
   },
 };
