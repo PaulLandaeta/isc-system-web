@@ -28,7 +28,7 @@ interface InternalValues {
   president: string;
   firstJuror: string;
   secondJuror: string;
-  date: Dayjs;
+  date: Dayjs | null;
 }
 
 interface InternalDefenseStageProps {
@@ -53,13 +53,16 @@ const InternalDefenseStage: FC<InternalDefenseStageProps> = ({ onPrevious, onNex
       firstJuror: defenseDetail?.first_juror?.toString() || process?.tutor_id?.toString() || "",
       secondJuror:
         defenseDetail?.second_juror?.toString() || process?.reviewer_id?.toString() || "",
-      date: defenseDetail?.date ? dayjs(defenseDetail.date) : dayjs(),
+      date: defenseDetail?.date ? dayjs(defenseDetail.date) : null,
     },
     validationSchema: Yup.object({
       president: Yup.string().required("* Debe agregar un presidente"),
       firstJuror: Yup.string().required("* Debe agregar un primer jurado"),
       secondJuror: Yup.string().required("* Debe agregar un segundo jurado"),
-      date: Yup.mixed().required("* Debe seleccionar una fecha"),
+      date: Yup.mixed()
+        .nullable()
+        .required("* Debe seleccionar una fecha")
+        .test("is-valid", "* Fecha no válida", (value) => dayjs.isDayjs(value) && value.isValid()),
     }),
     onSubmit: () => {
       setShowModal(true);
@@ -73,7 +76,7 @@ const InternalDefenseStage: FC<InternalDefenseStageProps> = ({ onPrevious, onNex
         firstJuror: defenseDetail.first_juror?.toString() || process?.tutor_id?.toString() || "",
         secondJuror:
           defenseDetail.second_juror?.toString() || process?.reviewer_id?.toString() || "",
-        date: defenseDetail.date ? dayjs(defenseDetail.date) : dayjs(),
+        date: defenseDetail.date ? dayjs(defenseDetail.date) : null,
       });
     }
   }, [defenseDetail]);
@@ -174,6 +177,8 @@ const InternalDefenseStage: FC<InternalDefenseStageProps> = ({ onPrevious, onNex
       <Typography variant="h6" gutterBottom style={{ fontWeight: "bold" }}>
         {"Etapa 4: Defensa Interna"}{" "}
         {subStage === 1 && <ModeEditIcon onClick={editForm} style={{ cursor: "pointer" }} />}
+        {"Etapa 4: Defensa Interna"}{" "}
+        {subStage === 1 && <ModeEditIcon onClick={editForm} style={{ cursor: "pointer" }} />}
       </Typography>
       {subStage === 0 && (
         <>
@@ -241,6 +246,14 @@ const InternalDefenseStage: FC<InternalDefenseStageProps> = ({ onPrevious, onNex
                     format="DD/MM/YYYY"
                     minDate={currentDate}
                     maxDate={currentDate.add(1, "year")}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        onBlur: () => formik.setFieldTouched("date", true),
+                        error: formik.touched.date && Boolean(formik.errors.date),
+                        helperText: formik.touched.date && formik.errors.date,
+                      },
+                    }}
                   />
                 </LocalizationProvider>
               </Grid>

@@ -4,7 +4,7 @@ import InternalDefenseStage from "./stages/InternalDefenseStage";
 import { MentorStage } from "./stages/MentorStage";
 import { RegistrationStage } from "./stages/RegistrationStage";
 import { ReviewerStage } from "./stages/ReviewerStage";
-import { ExternalDefenseStage } from "./stages/ExternalDefenseStage";
+import ExternalDefenseStage from "./stages/ExternalDefenseStage";
 import { Seminar } from "../models/studentProcess";
 import { steps } from "../data/steps";
 import { useProcessStore } from "../store/store";
@@ -67,7 +67,9 @@ const ProgressTracker: FC<ProgressTrackerProps> = ({ currentStepIndex, status })
         <Box className="flex items-center space-x-4 mx-5">
           <Typography variant="h6" className="font-semibold text-primary">
             {"Estado: "}
-            <span className="text-red-1 font-medium">{status}</span>
+            <span className="text-red-1 font-medium">
+            {steps[process?.stage_id ?? 0]}
+            </span>
           </Typography>
         </Box>
       </Box>

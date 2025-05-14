@@ -127,13 +127,13 @@ const CreateStudentForm = ({ onSuccess }: { onSuccess: () => void }) => {
             <Typography variant="body2" sx={{ fontSize: 14, color: "gray" }}>
               Ingrese los datos del estudiante a continuación.
             </Typography>
-            <Divider flexItem sx={{ mt: 1, mb: 0 }} />
+            <Divider flexItem sx={{ mt: 2, mb: 2 }} />
           </Grid>
 
           <Grid item xs={12}>
             <Grid container spacing={2}>
               <Grid item xs={3}>
-                <Typography variant="h6">Información del Estudiante</Typography>
+                <Typography variant="body2">Información del Estudiante</Typography>
               </Grid>
               <Grid item xs={9}>
                 <Grid container spacing={2}>
@@ -192,13 +192,13 @@ const CreateStudentForm = ({ onSuccess }: { onSuccess: () => void }) => {
                 </Grid>
               </Grid>
             </Grid>
-            <Divider flexItem sx={{ mt: 1, mb: -2 }} />
+            <Divider flexItem sx={{ mt: 2, mb: 2 }} />
           </Grid>
 
           <Grid item xs={12}>
-            <Grid container spacing={2} sx={{ padding: 1 }}>
+            <Grid container spacing={2}>
               <Grid item xs={3}>
-                <Typography variant="h6">Información Adicional</Typography>
+                <Typography variant="body2">Información Adicional</Typography>
               </Grid>
               <Grid item xs={9}>
                 <TextField
@@ -225,7 +225,7 @@ const CreateStudentForm = ({ onSuccess }: { onSuccess: () => void }) => {
                 />
               </Grid>
             </Grid>
-            <Divider flexItem sx={{ mt: 0, mb: 0 }} />
+            <Divider flexItem sx={{ mt: 2, mb: 2 }} />
           </Grid>
 
           <Grid item xs={12}>
@@ -239,7 +239,7 @@ const CreateStudentForm = ({ onSuccess }: { onSuccess: () => void }) => {
                       name="isIntern"
                     />
                   }
-                  label="¿Es Becario?"
+                  label=<Typography variant="body2">¿Es Becario?</Typography>
                 />
               </Grid>
             </Grid>

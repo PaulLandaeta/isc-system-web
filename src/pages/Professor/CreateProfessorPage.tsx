@@ -13,31 +13,83 @@ const PHONE_ERROR_MESSAGE = "Ingrese un número de teléfono válido.";
 const onlyLettersRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
 
 const validationSchema = Yup.object({
-  name: Yup.string()
-    .matches(onlyLettersRegex, "El nombre solo debe contener letras")
-    .required("El nombre completo es obligatorio"),
-  lastname: Yup.string()
-    .matches(onlyLettersRegex, "El apellido paterno solo debe contener letras")
-    .required("El apellido es obligatorio"),
-  mothername: Yup.string()
-    .matches(onlyLettersRegex, "El apellido materno solo debe contener letras")
-    .required("El apellido materno es obligatorio"),
-  email: Yup.string()
-    .email("Ingrese un correo electrónico válido")
-    .required("El correo electrónico es obligatorio"),
-  phone: Yup.string()
-    .matches(/^\+\d{1,3}\s\d+$/, PHONE_ERROR_MESSAGE)
-    .required("El número de teléfono es requerido"),
-  degree: Yup.string().required("El título académico es obligatorio"),
-  code: Yup.number()
-    .typeError("El código debe ser numérico")
-    .required("El código de docente es obligatorio"),
-});
-function CreateProfessorPage() {
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [successDialog, setSuccessDialog] = useState(false);
-  const [errorDialog, setErrorDialog] = useState(false);
+ name: Yup.string()
+   .matches(onlyLettersRegex, "El nombre solo debe contener letras")
+   .required("El nombre completo es obligatorio"),
+ lastname: Yup.string()
+   .matches(onlyLettersRegex, "El apellido paterno solo debe contener letras")
+   .required("El apellido es obligatorio"),
+ mothername: Yup.string()
+   .matches(onlyLettersRegex, "El apellido materno solo debe contener letras")
+   .required("El apellido materno es obligatorio"),
+ email: Yup.string()
+   .email("Ingrese un correo electrónico válido")
+   .required("El correo electrónico es obligatorio"),
+ phone: Yup.string()
+   .matches(
+     /^\+\d{1,3}\s\d+$/,
+      PHONE_ERROR_MESSAGE
+   )
+   .required("El número de teléfono es requerido"),
+ degree: Yup.string().required("El título académico es obligatorio"),
+ code: Yup.number()
+   .typeError("El código debe ser numérico")
+   .required("El código de docente es obligatorio"),
+
+ });
+const CreateProfessorPage = () => {
+ const [loading, setLoading] = useState(false);
+ const [message, setMessage] = useState("");
+ const [successDialog, setSuccessDialog] = useState(false);
+ const [errorDialog, setErrorDialog] = useState(false);
+
+
+ const sucessDialogClose = () => {
+   setSuccessDialog(false);
+   formik.resetForm();
+ };
+
+
+ const errorDialogClose = () => {
+   setErrorDialog(false);
+ };
+
+
+ const formik = useFormik<ProfessorInterface>({
+   initialValues: {
+     name: "",
+     lastname: "",
+     mothername: "",
+     email: "",
+     phone: "",
+     degree: "",
+     code: "",
+   },
+   validationSchema,
+   onSubmit: async (values) => {
+     setLoading(true);
+     try {
+       await createProfessor(values);
+       setMessage("Profesor creado con éxito");
+       setSuccessDialog(true);
+     } catch (error) {
+       setMessage("Error al crear el docente");
+       setErrorDialog(true);
+     } finally {
+       setLoading(false);
+     }
+   },
+ });
+
+
+ const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+   const { value } = event.target;
+   const formattedValue = value
+     .replace(/[^+\d\s]/g, "")
+     .replace(/(\+\d{1,3})\s?(\d{0,})/, "$1 $2");
+   formik.setFieldValue("phone", formattedValue);
+ };
+
 
   const errorDialogClose = () => {
     setErrorDialog(false);
