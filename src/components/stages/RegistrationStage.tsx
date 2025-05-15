@@ -70,7 +70,7 @@ export const RegistrationStage: FC<RegistrationStageProps> = ({ onNext }) => {
     if (studentProcess) {
       studentProcess.modality_id = mode;
       studentProcess.period = period;
-      setProcess(studentProcess);
+      setProcess({ ...studentProcess });
       await updateProcess(studentProcess);
       onNext();
     }

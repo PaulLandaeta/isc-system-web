@@ -1,7 +1,6 @@
 import { DataGrid, GridColDef, GridColumnVisibilityModel } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import CloseIcon from "@mui/icons-material/ArrowBack";
 import {
   Button,
   IconButton,
@@ -11,7 +10,11 @@ import {
   DialogActions,
   DialogContentText,
   Box,
+  useMediaQuery,
+  Container,
+  Modal,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import ContainerPage from "../../components/common/ContainerPage";
 import { deleteStudent, getStudents } from "../../services/studentService";
 import AddIcon from "@mui/icons-material/Add";
@@ -26,6 +29,8 @@ import CreateStudentForm from "./CreateStudentForm";
 
 const StudentPage = () => {
   const navigate = useNavigate();
+  const isSmallScreen = useMediaQuery(useTheme().breakpoints.down("sm"));
+  const [,setIsSidebarVisible] = useState(true);
   const [students, setStudents] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -42,6 +47,14 @@ const StudentPage = () => {
     phone: true,
     actions: true,
   });
+
+  useEffect(() => {
+    if (isSmallScreen) {
+      setIsSidebarVisible(false);
+    } else {
+      setIsSidebarVisible(true);
+    }
+  }, [isSmallScreen]);
 
   useEffect(() => {
     const fetchPermissions = async () => {
@@ -62,6 +75,7 @@ const StudentPage = () => {
     {
       field: "code",
       headerName: "Código",
+      description: "Código",
       headerAlign: "center",
       align: "center",
       flex: 1,
@@ -74,6 +88,7 @@ const StudentPage = () => {
     {
       field: "name",
       headerName: "Nombre Completo",
+      description: "Nombre Completo",
       headerAlign: "center",
       align: "center",
       flex: 1,
@@ -86,6 +101,7 @@ const StudentPage = () => {
     {
       field: "email",
       headerName: "Correo",
+      description: "Correo",
       headerAlign: "center",
       align: "center",
       flex: 1,
@@ -98,6 +114,7 @@ const StudentPage = () => {
     {
       field: "phone",
       headerName: "Celular",
+      description: "Celular",
       type: "number",
       headerAlign: "center",
       align: "center",
@@ -111,6 +128,7 @@ const StudentPage = () => {
     {
       field: "actions",
       headerName: "Acciones",
+      description: "Acciones",
       headerAlign: "center",
       align: "center",
       flex: 1,
@@ -149,6 +167,7 @@ const StudentPage = () => {
   ];
 
   const handleCreateStudent = () => setOpenCreateModal(true);
+  const handleCloseCreateStudent = () => setOpenCreateModal(false);
 
   const handleStudentCreated = () => {
     setOpenCreateModal(false);
@@ -199,6 +218,12 @@ const StudentPage = () => {
   };
 
   return (
+    <Container
+      sx={{
+        marginLeft: { xs: -5, sm: 3 },
+      }}
+    >
+
     <ContainerPage
       title={"Estudiantes"}
       subtitle={"Lista de estudiantes"}
@@ -214,6 +239,8 @@ const StudentPage = () => {
               width: { xs: "120%", sm: "auto" },
               mb: { xs: 1, sm: 0 },
               mt: { xs: 5, sm: 0 },
+               fontSize: { xs: "0.5rem", sm: "1rem" },
+              marginLeft: { xs: 2, sm: 2 },
             }}
           >
             Agregar Estudiante
@@ -221,7 +248,13 @@ const StudentPage = () => {
         )
       }
       children={
-        <Box sx={{ width: "100%", height: { xs: "auto" } }}>
+          <Box
+            sx={{
+              width: "100%",
+              height: { xs: "auto", sm: "100%" },
+              ml: { xs: 5, sm: 0 },
+            }}
+          >
           <DataGrid
             rows={students}
             columns={columns}
@@ -235,7 +268,7 @@ const StudentPage = () => {
             onColumnVisibilityModelChange={(newModel) => {
               const updatedModel = {
                 ...newModel,
-                name: true,
+                code: true,
               };
               const visibleColumns = Object.values(updatedModel).filter(Boolean).length;
               if (visibleColumns === 0) {
@@ -250,27 +283,6 @@ const StudentPage = () => {
               row: "bg-white dark:bg-gray-800",
               columnHeaderTitle: "!font-bold text-center",
             }}
-            slotProps={{
-              columnsManagement: {
-                autoFocusSearchField: false,
-                searchInputProps: {
-                  sx: {
-                    "& .MuiOutlinedInput-root": {
-                      "&:hover fieldset": {
-                        borderColor: "secondary.main",
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "secondary.main",
-                      },
-                    },
-                    "& input": {
-                      outline: "none !important",
-                      boxShadow: "none !important",
-                    },
-                  },
-                },
-              },
-            }}
             sx={{
               "& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within": {
                 outline: "none !important",
@@ -282,18 +294,14 @@ const StudentPage = () => {
                 border: "none !important",
                 boxShadow: "none !important",
               },
-              "& .MuiDataGrid-cell--editing": {
-                boxShadow: "none !important",
-              },
-              "& .MuiDataGrid-cell.MuiDataGrid-cell--editing": {
-                outline: "none !important",
-              },
               "& .MuiDataGrid-cell": {
                 borderColor: "transparent",
               },
               "& .MuiDataGrid-row.Mui-selected": {
                 backgroundColor: "inherit !important",
               },
+                fontSize: { xs: "0.8rem", sm: "1rem" },
+                marginLeft: { xs: "-40px", sm: "-40px" },
             }}
             pageSizeOptions={[5, 10]}
             disableRowSelectionOnClick
@@ -320,39 +328,30 @@ const StudentPage = () => {
               </Button>
             </DialogActions>
           </Dialog>
-          <Dialog
-            open={openCreateModal}
-            maxWidth="md"
-            PaperProps={{
-              sx: {
-                borderRadius: 3,
-                p: 0,
-                maxHeight: "100vh",
-                position: "relative",
-              },
-            }}
-          >
-          <IconButton
-            onClick={() => setOpenCreateModal(false)}
-            sx={{
-              position: "absolute",
-              left: 2,
-              top: 2,
-              "&:hover": {
-                bgcolor: "grey.200",
-              },
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-
-            <DialogContent sx={{ p: 2, m: 1 }}>
+          <Modal open={openCreateModal} onClose={handleCloseCreateStudent}>
+            <Box
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: '80%',
+                maxWidth: '100vh',
+                maxHeight: "80vh",
+                bgcolor: "background.paper",
+                borderRadius: 2,
+                boxShadow: 24,
+                overflowY: "auto",
+                p: 4
+              }}
+            >
               <CreateStudentForm onSuccess={handleStudentCreated} />
-            </DialogContent>
-          </Dialog>
+            </Box>
+          </Modal>
         </Box>
       }
     ></ContainerPage>
+    </Container>
   );
 };
 

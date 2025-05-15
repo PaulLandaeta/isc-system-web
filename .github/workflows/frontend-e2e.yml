@@ -1,0 +1,24 @@
+name: CI - Pruebas E2E Frontend
+
+on:
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar el repositorio
+        uses: actions/checkout@v3
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Ejecutar pruebas E2E
+        run: npm test

@@ -1,0 +1,59 @@
+name: Deploy Frontend to Vercel on Develop Push
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy-develop:
+    name: Deploy to Vercel - Develop
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy develop on Vercel
+        uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.ORG_ID }}
+          vercel-project-id: ${{ secrets.PROJECT_ID }}
+          alias-domains: isc-system-web-develop.vercel.app
+
+  qa-approval:
+    name: Wait for QA Approval
+    needs: deploy-develop
+    runs-on: ubuntu-latest
+    environment:
+      name: qa-deploy
+    steps:
+      - run: echo "Esperando aprobación para merge a QA..."
+
+  promote-to-qa:
+    name: Merge and Deploy QA
+    needs: qa-approval
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout QA branch
+        uses: actions/checkout@v3
+        with:
+          ref: qa
+
+      - name: Configurar Git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+
+      - name: Merge develop en qa
+        run: |
+          git fetch origin develop
+          git merge origin/develop --no-edit
+          git push origin qa
+
+      - name: Deploy QA en Vercel
+        uses: amondnet/vercel-action@v20
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.ORG_ID }}
+          vercel-project-id: ${{ secrets.PROJECT_ID }}
+          alias-domains: isc-system-web-qa.vercel.app

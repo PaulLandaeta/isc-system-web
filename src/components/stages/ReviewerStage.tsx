@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Box, Button, Checkbox, FormControlLabel, Grid } from "@mui/material";
+import { Box, Button, Checkbox, Grid, Paper, Typography } from "@mui/material";
 import ConfirmModal from "../common/ConfirmModal";
 import { steps } from "../../data/steps";
 import { useProcessStore } from "../../store/store";
@@ -59,11 +59,11 @@ export const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) =>
 
   const saveStage = async () => {
     if (process) {
-      const { reviewer, reviewerDesignationLetterSubmitted } = formik.values;
+      const { reviewer, reviewerDesignationLetterSubmitted, reviewerApprovalLetterSubmitted } = formik.values;
+      process.reviewer_approval = reviewerApprovalLetterSubmitted;
       process.reviewer_letter = reviewerDesignationLetterSubmitted;
       process.reviewer_id = Number(reviewer);
       process.stage_id = 3;
-      process.reviewer_approval = true;
       process.reviewer_approval_date = dayjs();
       setProcess(process);
       try {
@@ -97,6 +97,7 @@ export const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) =>
     return Boolean(
       formik.values.reviewer &&
         formik.values.reviewerDesignationLetterSubmitted &&
+        formik.values.reviewerApprovalLetterSubmitted &&
         formik.values.date_reviewer_assignament
     );
   };
@@ -139,25 +140,27 @@ export const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) =>
             </LocalizationProvider>
           </Grid>
         </Grid>
-        <Box mt={3}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                name="reviewerDesignationLetterSubmitted"
-                color="primary"
-                checked={formik.values.reviewerDesignationLetterSubmitted}
-                onChange={formik.handleChange}
-                disabled={editMode}
-              />
-            }
-            label="Carta de Designación de Revisor Presentada"
+        <Paper
+          elevation={0}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            backgroundColor: "#e6f4ff",
+            p: 2,
+            borderRadius: 2,
+            mt: 2,
+          }}
+        >
+          <Checkbox
+            name="reviewerDesignationLetterSubmitted"
+            color="primary"
+            checked={formik.values.reviewerDesignationLetterSubmitted}
+            onChange={formik.handleChange}
+            disabled={editMode}
           />
-          {formik.touched.reviewerDesignationLetterSubmitted &&
-          formik.errors.reviewerDesignationLetterSubmitted ? (
-            <div className="text-red-1 text-xs mt-1">
-              {formik.errors.reviewerDesignationLetterSubmitted}
-            </div>
-          ) : null}
+          <Typography variant="body2" sx={{ flexGrow: 1 }}>
+            Carta de Designación de Revisor Presentada
+          </Typography>
           <DownloadButton
             url={REVIEWER_ASSIGNMENT.path}
             data={{
@@ -177,27 +180,34 @@ export const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) =>
               process?.reviewer_fullname || ""
             }.${REVIEWER_ASSIGNMENT.extention}`}
           />
-        </Box>
-
-        <Box mt={3}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                name="reviewerApprovalLetterSubmitted"
-                color="primary"
-                checked={formik.values.reviewerApprovalLetterSubmitted}
-                onChange={formik.handleChange}
-                disabled={editMode}
-              />
-            }
-            label="Carta de Aprobación de Revisor Presentada"
-          />
-          {formik.touched.reviewerApprovalLetterSubmitted &&
-          formik.errors.reviewerApprovalLetterSubmitted ? (
+          {formik.touched.reviewerDesignationLetterSubmitted &&
+          formik.errors.reviewerDesignationLetterSubmitted ? (
             <div className="text-red-1 text-xs mt-1">
-              {formik.errors.reviewerApprovalLetterSubmitted}
+              {formik.errors.reviewerDesignationLetterSubmitted}
             </div>
           ) : null}
+        </Paper>
+        <Paper
+          elevation={0}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            backgroundColor: "#e6f4ff",
+            p: 2,
+            borderRadius: 2,
+            mt: 2,
+          }}
+        >
+          <Checkbox
+            name="reviewerApprovalLetterSubmitted"
+            color="primary"
+            checked={formik.values.reviewerApprovalLetterSubmitted}
+            onChange={formik.handleChange}
+            disabled={editMode}
+          />
+          <Typography variant="body2" sx={{ flexGrow: 1 }}>
+            Carta de Aprobación de Revisor Presentada
+          </Typography>
           <DownloadButton
             url={TUTOR_APPROBAL.path}
             data={{
@@ -213,13 +223,23 @@ export const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) =>
             }}
             filename={`${TUTOR_APPROBAL.filename}_${formik.values.reviewer}.${TUTOR_APPROBAL.extention}`}
           />
-        </Box>
-
+          {formik.touched.reviewerApprovalLetterSubmitted &&
+          formik.errors.reviewerApprovalLetterSubmitted ? (
+            <div className="text-red-1 text-xs mt-1">
+              {formik.errors.reviewerApprovalLetterSubmitted}
+            </div>
+          ) : null}
+        </Paper>
         <Box display="flex" justifyContent="space-between" mt={4}>
           <Button type="button" variant="contained" color="secondary" onClick={onPrevious}>
             Anterior
           </Button>
-          <Button type="submit" variant="contained" color="primary">
+          <Button type="submit" variant="contained" color="primary"
+          disabled={
+              !formik.values.reviewerDesignationLetterSubmitted ||
+              !formik.values.reviewerApprovalLetterSubmitted
+            }
+          >
             {isApproveButton ? "Aprobar Etapa" : "Guardar"}
           </Button>
         </Box>

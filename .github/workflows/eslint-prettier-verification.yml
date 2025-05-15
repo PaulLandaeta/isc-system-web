@@ -1,0 +1,31 @@
+name: Lint Verification (Prettier + ESLint)
+
+on:
+  pull_request:
+    branches: [develop]
+    types: [opened, synchronize]  
+
+jobs:
+  lint:
+    name: Run Linters
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4  
+        with:
+          fetch-depth: 0  
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18 
+
+      - name: Install Dependencies
+        run: npm install  
+
+      - name: Run Prettier
+        run: npx prettier --check --loglevel warn .  
+
+      - name: Run ESLint
+        run: npx eslint --max-warnings=0 . --ext .js,.ts,.jsx,.tsx  

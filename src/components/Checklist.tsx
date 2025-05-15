@@ -8,8 +8,10 @@ import {
   FaClock,
   FaMinus,
 } from "react-icons/fa";
+import { useEffect, useState } from "react";
 import { Seminar } from "../models/studentProcess";
 import { useProcessStore } from "../store/store";
+import { getUserById } from "../services/studentService";
 
 const Checklist = () => {
   const process = useProcessStore((state) => state.process);
@@ -23,44 +25,77 @@ const Checklist = () => {
     : "";
 
   const {
-    student_name,
-    tutor_fullname,
-    tutor_degree,
-    reviewer_fullname,
-    reviewer_degree,
+    student_name: studentName,
+    tutor_fullname: tutorFullname,
+    tutor_degree: tutorDegree,
+    reviewer_fullname: reviewerFullname,
+    reviewer_degree: reviewerDegree,
     period,
-    tutor_approval,
-    reviewer_approval,
-    stage_id,
+    tutor_approval: tutorApproval,
+    reviewer_approval: reviewerApproval,
+    stage_id: stageId,
   } = process as Seminar;
 
   const renderStatusIcon = (stage: number) => {
-    if (stage < stage_id) return <FaCheck className="text-green-500 ml-auto" />;
-    else if (stage == stage_id) return <FaClock className="text-yellow-500 ml-auto" />;
-    else return <FaMinus className="text-gray-400 ml-auto" />;
-  };
+    switch (stage) {
+      case 0:
+        return <FaCheck className="text-green-500 ml-auto" />;
 
-  const telegramLink = `https://t.me/+59176517816`;
+      case 1:
+        if (tutorApproval) {
+          return <FaCheck className="text-green-500 ml-auto" />;
+        }
+        if (stageId === 1) {
+          return <FaClock className="text-yellow-500 ml-auto" />;
+        }
+        return <FaMinus className="text-gray-400 ml-auto" />;
+
+      case 2:
+        if (reviewerApproval) {
+          return <FaCheck className="text-green-500 ml-auto" />;
+        }
+        if (stageId === 2) {
+          return <FaClock className="text-yellow-500 ml-auto" />;
+        }
+        return <FaMinus className="text-gray-400 ml-auto" />;
+
+      default:
+        return <FaMinus className="text-gray-400 ml-auto" />;
+    }
+  };
+  const [telegramLink, setTelegramLink] = useState<string>("");
+
+  const fetchUserData = async () => {
+    try {
+      const response = await getUserById(Number(process?.student_id));
+      setTelegramLink(`https://t.me/+591${response.phone}`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    fetchUserData();
+  }, []);
 
   return (
     <div className="space-y-4">
       <div className="bg-white rounded-lg p-4 shadow-md">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">{student_name}</h2>
-            <p className="text-sm text-gray-500">Sistema de Gestión Académica</p>
+            <h2 className="text-xl font-bold text-gray-900">{studentName}</h2>
+            <p className="text-sm text-gray-500">{"Sistema de Gestión Académica"}</p>
           </div>
           <a href={telegramLink} target="_blank" rel="noopener noreferrer">
             <button className="flex items-center gap-2 bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-lg text-sm">
               <FaEnvelope />
-              Enviar Mensaje
+              {"Enviar Mensaje"}
             </button>
           </a>
         </div>
       </div>
 
       <div className="bg-white rounded-lg p-4 shadow-md">
-        <h3 className="text-md font-semibold text-gray-900 mb-4 ml-2">Etapas de Graduación</h3>
+        <h3 className="text-md font-semibold text-gray-900 mb-4 ml-2">{"Etapas de Graduación"}</h3>
 
         <ul className="space-y-6 relative border-s border-gray-200 ml-3">
           <li className="flex items-start gap-3 relative ms-6">
@@ -68,7 +103,7 @@ const Checklist = () => {
               <FaCalendar className="text-blue-800" />
             </span>
             <div>
-              <h4 className="text-sm font-bold text-gray-900">Seminario de Grado</h4>
+              <h4 className="text-sm font-bold text-gray-900">{"Seminario de Grado"}</h4>
               <p className="text-sm text-gray-500">
                 {period ? `Inscripción ${period}` : "No inscrito aún"}
               </p>
@@ -82,14 +117,16 @@ const Checklist = () => {
             </span>
             <div>
               <h4 className="text-sm font-bold text-gray-900">
-                Tutor: {tutor_degree} {tutor_fullname}
+                {"Tutor: "}
+                {tutorDegree} {tutorFullname}
               </h4>
-              {tutor_approval ? (
+              {tutorApproval ? (
                 <p className="text-sm text-gray-500">
-                  Aprobación del Tutor el {formattedTutorDate}
+                  {"Aprobación del Tutor el "}
+                  {formattedTutorDate}
                 </p>
               ) : (
-                <p className="text-sm text-gray-500">Fase de Tutor no Aprobada</p>
+                <p className="text-sm text-gray-500">{"Fase de Tutor no Aprobada"}</p>
               )}
             </div>
             {renderStatusIcon(1)}
@@ -101,14 +138,16 @@ const Checklist = () => {
             </span>
             <div>
               <h4 className="text-sm font-bold text-gray-900">
-                Revisor: {reviewer_degree} {reviewer_fullname}
+                {"Revisor: "}
+                {reviewerDegree} {reviewerFullname}
               </h4>
-              {reviewer_approval ? (
+              {reviewerApproval ? (
                 <p className="text-sm text-gray-500">
-                  Aprobación del Revisor el {formattedReviewerDate}
+                  {"Aprobación del Revisor el "}
+                  {formattedReviewerDate}
                 </p>
               ) : (
-                <p className="text-sm text-gray-500">Fase de Revisor no Aprobada</p>
+                <p className="text-sm text-gray-500">{"Fase de Revisor no Aprobada"}</p>
               )}
             </div>
             {renderStatusIcon(2)}

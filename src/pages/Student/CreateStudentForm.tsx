@@ -9,15 +9,17 @@ import {
   Typography,
   Switch,
   FormControlLabel,
+  Container,
 } from "@mui/material";
 import { createStudent } from "../../services/studentService";
 import { createIntern } from "../../services/internService";
 import axios from "axios";
-import { FormContainer } from "../CreateGraduation/components/FormContainer";
 import SuccessDialog from "../../components/common/SucessDialog";
 import ErrorDialog from "../../components/common/ErrorDialog";
 const lettersRegex = /^[A-Za-zÁÉÍÓÚÑáéíóúñ\s]+$/;
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+const PHONE_ERROR_MESSAGE = "Ingrese un número de teléfono válido.";
 
 const validationSchema = Yup.object({
   name: Yup.string()
@@ -40,17 +42,17 @@ const validationSchema = Yup.object({
     .max(50, "Máximo 50 caracteres")
     .required("El correo electrónico es obligatorio"),
 
-  phone: Yup.string().matches(/^\d{8}$/, "El número debe tener exactamente 8 dígitos"),
+  phone: Yup.string().matches(/^\d{8}$/, PHONE_ERROR_MESSAGE),
 
   code: Yup.string().matches(/^\d{1,8}$/, "El código debe tener hasta 8 dígitos"),
 
   isIntern: Yup.boolean(),
 
   total_hours: Yup.number()
-    .min(0, "Las horas no pueden ser negativas")
-    .when("isIntern", {
+    .min(0, "Las horas no pueden ser negativas.")
+    .when("isIntern",{
       is: true,
-      then: (schema) => schema.required("Las horas becarias son obligatorias"),
+      then: (schema) => schema.required("Las horas becarias son obligatorias."),
       otherwise: (schema) => schema.nullable(),
     }),
 });
@@ -117,21 +119,21 @@ const CreateStudentForm = ({ onSuccess }: { onSuccess: () => void }) => {
   };
 
   return (
-    <FormContainer>
-      <form onSubmit={formik.handleSubmit}>
+    <Container>
+      <form onSubmit={formik.handleSubmit} style={{ marginLeft: -20}}>
         <Grid container spacing={1}>
           <Grid item xs={12}>
             <Typography variant="h4">Crear Nuevo Estudiante</Typography>
             <Typography variant="body2" sx={{ fontSize: 14, color: "gray" }}>
               Ingrese los datos del estudiante a continuación.
             </Typography>
-            <Divider flexItem sx={{ mt: 1, mb: 0 }} />
+            <Divider flexItem sx={{ mt: 2, mb: 2 }} />
           </Grid>
 
           <Grid item xs={12}>
             <Grid container spacing={2}>
               <Grid item xs={3}>
-                <Typography variant="h6">Información del Estudiante</Typography>
+                <Typography variant="body2">Información del Estudiante</Typography>
               </Grid>
               <Grid item xs={9}>
                 <Grid container spacing={2}>
@@ -190,13 +192,13 @@ const CreateStudentForm = ({ onSuccess }: { onSuccess: () => void }) => {
                 </Grid>
               </Grid>
             </Grid>
-            <Divider flexItem sx={{ mt: 1, mb: -2 }} />
+            <Divider flexItem sx={{ mt: 2, mb: 2 }} />
           </Grid>
 
           <Grid item xs={12}>
-            <Grid container spacing={2} sx={{ padding: 1 }}>
+            <Grid container spacing={2}>
               <Grid item xs={3}>
-                <Typography variant="h6">Información Adicional</Typography>
+                <Typography variant="body2">Información Adicional</Typography>
               </Grid>
               <Grid item xs={9}>
                 <TextField
@@ -223,7 +225,7 @@ const CreateStudentForm = ({ onSuccess }: { onSuccess: () => void }) => {
                 />
               </Grid>
             </Grid>
-            <Divider flexItem sx={{ mt: 0, mb: 0 }} />
+            <Divider flexItem sx={{ mt: 2, mb: 2 }} />
           </Grid>
 
           <Grid item xs={12}>
@@ -237,7 +239,7 @@ const CreateStudentForm = ({ onSuccess }: { onSuccess: () => void }) => {
                       name="isIntern"
                     />
                   }
-                  label="¿Es Becario?"
+                  label=<Typography variant="body2">¿Es Becario?</Typography>
                 />
               </Grid>
             </Grid>
@@ -287,7 +289,7 @@ const CreateStudentForm = ({ onSuccess }: { onSuccess: () => void }) => {
         title="¡Vaya!"
         subtitle={message}
       />
-    </FormContainer>
+    </Container>
   );
 };
 

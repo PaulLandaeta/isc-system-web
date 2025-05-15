@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 import LoadingOverlay from "../../components/common/Loading";
 import { updateProfessor } from "../../services/mentorsService";
 
+const PHONE_ERROR_MESSAGE = "Ingrese un número de teléfono válido.";
 const validationSchema = Yup.object({
   name: Yup.string().required("El nombre completo es obligatorio"),
   lastname: Yup.string().required("El apellido es obligatorio"),
@@ -16,7 +17,7 @@ const validationSchema = Yup.object({
     .email("Ingrese un correo electrónico válido")
     .required("El correo electrónico es obligatorio"),
   phone: Yup.string()
-    .matches(/^[0-9]{8}$/, "Ingrese un número de teléfono válido")
+    .matches(/^[0-9]{8}$/, PHONE_ERROR_MESSAGE)
     .optional(),
   code: Yup.number().optional(),
 });
@@ -32,10 +33,9 @@ const EditProfessorPage = () => {
     try {
       const response = await getUserById(Number(id));
       formik.setValues({
-        ...formik.initialValues,
         ...response,
-        roles: response.roles || [3],
-        role_id: response.role_id || 3,
+        roles: [2], 
+        role_id: 2,
         isStudent: false,
         is_scholarship: false,
         degree: response.degree || "",
@@ -67,8 +67,16 @@ const EditProfessorPage = () => {
     validationSchema,
     onSubmit: async (values) => {
       try {
+        const updatedValues = {
+          ...values,
+          id: Number(id),
+          role_id: 2,
+          roles: [2],
+          isStudent: false,
+          is_scholarship: false
+        };
         // @ts-ignore
-        await updateProfessor(values);
+        await updateProfessor(updatedValues);
         setMessage("Docente actualizado con éxito");
         setSeverity("success");
       } catch (error) {

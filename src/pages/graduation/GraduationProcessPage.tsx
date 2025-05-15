@@ -1,6 +1,7 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { useLoaderData } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+
 import { FaSearch } from "react-icons/fa";
 import { Student } from "../../models/studentInterface";
 import { getPermissionById } from "../../services/permissionsService";
@@ -17,9 +18,9 @@ import ProcessForm from "../CreateGraduation/components/ProcessForm";
 const GraduationProcessPage = () => {
   const [filteredData, setFilteredData] = useState<Student[] | []>([]);
   const [search, setSearch] = useState("");
-  const [open,setOpen] = useState(false);
-  const handleOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   const studentsResponse = useLoaderData() as {
     data: Student[];
     message: string;
@@ -57,30 +58,40 @@ const GraduationProcessPage = () => {
       headerName: "Estudiante",
       headerAlign: "center",
       align: "center",
+      minWidth: 150,
+      maxWidth: 300,
       flex: 1,
-      hideable: false,
-      minWidth: 120,
+      resizable: true,
     },
     {
       field: "period",
       headerName: "Periodo",
       headerAlign: "center",
       align: "center",
+      minWidth: 120,
+      maxWidth: 200,
       flex: 1,
+      resizable: true,
     },
     {
       field: "tutor_name",
       headerName: "Tutor",
       headerAlign: "center",
       align: "center",
+      minWidth: 150,
+      maxWidth: 250,
       flex: 1,
+      resizable: true,
     },
     {
       field: "reviewer_name",
       headerName: "Revisor",
       headerAlign: "center",
       align: "center",
+      minWidth: 150,
+      maxWidth: 250,
       flex: 1,
+      resizable: true,
     },
     {
       field: "actions",
@@ -88,8 +99,13 @@ const GraduationProcessPage = () => {
       headerAlign: "center",
       align: "center",
       flex: 1,
+      minWidth: 120,
+      width: 140,
+      resizable: false,
       filterable: false,
       sortable: false,
+      minWidth: 100,
+      resizable: false,
       renderCell: (params) => (
         <div>
           {
@@ -118,14 +134,14 @@ const GraduationProcessPage = () => {
             onClick={goToCreateProcessPage}
             startIcon={<AddIcon />}
           >
-            Nuevo Proceso
+            {"Nuevo Proceso\r"}
           </Button>
         )
       }
     >
       <div className="flex flex-column sm:flex-row flex-wrap space-y-4 sm:space-y-0 items-center justify-between mb-4">
         <label htmlFor="table-search" className="sr-only">
-          Buscar
+          {"Buscar\r"}
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 flex items-center ps-3 pointer-events-none">
@@ -138,6 +154,20 @@ const GraduationProcessPage = () => {
             placeholder="Buscar por nombre de estudiante"
             value={search}
             onChange={handleSearchChange}
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            '&:hover fieldset': {
+                              borderColor: 'secondary.main',
+                            },
+                            '&.Mui-focused fieldset': {
+                              borderColor: 'secondary.main',
+                            },
+                          },
+                          '& input': {
+                            outline: 'none !important',
+                            boxShadow: 'none !important',
+                          },
+                        }}
           />
         </div>
       </div>
@@ -145,6 +175,8 @@ const GraduationProcessPage = () => {
       <Box sx={{ mb: 2 }}>
         <Paper>
           <DataGrid
+            autoHeight
+            disableColumnResize={false}
             rows={filteredData}
             columns={tableHeaders}
             localeText={dataGridLocaleText}
@@ -189,14 +221,31 @@ const GraduationProcessPage = () => {
               row: "bg-white dark:bg-gray-800",
               columnHeaderTitle: "!font-bold text-center",
             }}
+            slotProps={{
+                columnsManagement: {
+                  autoFocusSearchField: false,
+                  searchInputProps: {
+                    sx: {
+                      "& .MuiOutlinedInput-root": {
+                        "&:hover fieldset": {
+                          borderColor: "secondary.main",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "secondary.main",
+                        },
+                      },
+                      "& input": {
+                        outline: "none !important",
+                        boxShadow: "none !important",
+                      },
+                    },
+                  },
+                },
+              }}
           />
         </Paper>
       </Box>
-      <ProcessForm
-        isVisible={open}
-        isClosed={handleClose}
-      >
-      </ProcessForm>
+      <ProcessForm isVisible={open} isClosed={handleClose}></ProcessForm>
     </ContainerPage>
   );
 };

@@ -3,7 +3,9 @@ import IconButton from "@mui/material/IconButton";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
-import { Divider } from "@mui/material";
+import { Divider, ListItemButton } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useEffect } from "react";
 
 import UPB_LOGO from "../assets/upb_logo.png";
 import { useUserStore } from "../store/store";
@@ -64,9 +66,22 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
   const user = useUserStore((state) => state.user);
   const theme = useTheme();
+  const isSmallOrMediumScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigate = useNavigate();
 
-  const handleDrawerClose = () => {
-    setOpen(false);
+  useEffect(() => {
+    if (isSmallOrMediumScreen) {
+      setOpen(false);
+    } else {
+      setOpen(true);
+    }
+  }, [isSmallOrMediumScreen, setOpen]);
+
+  const goToPage = (path: string) => {
+    navigate(path);
+    if (isSmallOrMediumScreen) {
+      setOpen(false);
+    }
   };
 
   for (const key in user?.roles_permissions) {
@@ -75,7 +90,16 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
   }
 
   return (
-    <Drawer variant="permanent" open={open}>
+    <Drawer
+      variant="permanent"
+      open={open}
+      onClose={() => setOpen(false)}
+      sx={{
+      "& .MuiDrawer-paper": {
+        width: !open && window.innerWidth < 500 ? 0 : undefined,
+      },
+      }}
+    >
       <DrawerHeader>
         <img
           src={UPB_LOGO}
@@ -83,7 +107,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, setOpen }) => {
           style={{ width: "100%", height: "auto", maxWidth: "125px" }}
           className="h-10 ms-6 me-1"
         />
-        <IconButton onClick={handleDrawerClose}>
+        <IconButton onClick={() => setOpen(false)}>
           {theme.direction === "rtl" ? <ChevronRightIcon /> : <ChevronLeftIcon />}
         </IconButton>
       </DrawerHeader>

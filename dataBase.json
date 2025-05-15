@@ -1,0 +1,232 @@
+{
+    "mentors": [
+      { "value": 1, "label": "Juliet Oma" },
+      { "value": 2, "label": "James Williams" },
+      { "value": 3, "label": "Ahmed Ali" },
+      { "value": 4, "label": "Grace Funsho" }
+    ],
+    "reviewers": [
+      { "value": 1, "label": "Juliet Oma" },
+      { "value": 2, "label": "James Williams" },
+      { "value": 3, "label": "Ahmed Ali" },
+      { "value": 4, "label": "Grace Funsho" }
+    ],
+    "presidents": [
+      { "value": 1, "label": "Juliet Oma" },
+      { "value": 2, "label": "James Williams" },
+      { "value": 3, "label": "Ahmed Ali" },
+      { "value": 4, "label": "Grace Funsho" }
+    ],
+    "secretaries": [
+      { "value": 1, "label": "Juliet Oma" },
+      { "value": 2, "label": "James Williams" },
+      { "value": 3, "label": "Ahmed Ali" },
+      { "value": 4, "label": "Grace Funsho" }
+    ],
+    "modes": [
+      { "value": 1, "label": "Trabajo Dirigido" },
+      { "value": 2, "label": "Proyecto de Grado" },
+      { "value": 3, "label": "Tesis" }
+    ],
+    "process": [
+      {
+        "studentId": 12345,
+        "studentName": "Juan Perez",
+        "phoneNumber": "555-1234",
+        "mode": "Trabajo Dirigido",
+        "titleProject": "nombre del proyecto",
+        "state": "Revisor",
+        "graduationSteps": {
+          "registrationStage": { "passed": true, "date": "25/03/2024" },
+          "tutorStage": { "passed": true, "tutorName": "Dr. Ana López", "date": "02/06/2024" },
+          "reviewerStage": { "passed": true, "reviewerName": "Dr. Carlos Gómez", "date": "12/09/2024" },
+          "internalDefenseStage": { "passed": false, "scheduledDate": "2024-05-20" },
+          "externalDefenseStage": { "passed": false, "scheduledDate": "2024-05-20" }
+        }
+      }
+    ],
+    "flatPermissions": [
+      "students:view",
+      "students:edit",
+      "students:delete",
+      "users:view",
+      "users:create",
+      "users:delete",
+      "events:create"
+    ],
+    "menuConfig": [
+      {
+        "role": "admin",
+        "menu": [
+          {
+            "category": "Estudiantes",
+            "items": [
+              { "name": "Listado", "path": "/students" },
+              { "name": "Crear", "path": "/create-student" }
+            ]
+          },
+          {
+            "category": "Usuarios",
+            "items": [
+              { "name": "Gestión", "path": "/users" }
+            ]
+          }
+        ]
+      },
+      {
+        "role": "docente",
+        "menu": [
+          {
+            "category": "Proceso de Graduación",
+            "items": [
+              { "name": "Listado", "path": "/graduation-processes" }
+            ]
+          }
+        ]
+      }
+    ],
+    "login": [
+      {
+        "email": "paul.landaeta@upb.edu",
+        "password": "123456",
+        "token": "jwt_token_example",
+        "user": {
+          "id": 5,
+          "name": "Paul",
+          "role": "admin"
+        },
+        "permissions": ["students:edit", "students:delete", "events:create"]
+      }
+    ],
+    "roles": [
+      { "roleName": "Jefe de Carrera" },
+      { "roleName": "Docente" },
+      { "roleName": "Estudiante" },
+      { "roleName": "Estudiante2", "id": 4 },
+      { "roleName": "Becario", "id": 5 },
+      { "roleName": "Jefe de carrera FACED", "id": 6 },
+      { "roleName": "ayuda", "id": 7 },
+      { "roleName": "si", "id": 8 },
+      { "roleName": "ayuda", "id": 9 },
+      { "roleName": "Jefe de Carrera FIA", "id": 10 },
+      { "roleName": "Darko", "id": 11 },
+      { "roleName": "Paul", "id": 12 },
+      { "roleName": "Encargada de becas", "id": 13 },
+      { "roleName": "Egresado por excelencia", "id": 14 },
+      { "roleName": "", "id": 15 }
+    ],
+    "users": [
+      {
+        "name": "Mildret",
+        "code": "69271",
+        "lastname": "Robles",
+        "mothername": "Gutierrez",
+        "email": "mildret@quya.com",
+        "phone": "70182881",
+        "roles": ["Becario", "student"],
+        "degree": "",
+        "id": 12347
+      },
+      {
+        "name": "Hade",
+        "code": "12347",
+        "lastname": "Villegas",
+        "mothername": "Minerva",
+        "email": "hade@hade.com",
+        "phone": "79282012",
+        "roles": ["Estudiante"],
+        "degree": "",
+        "id": 12348
+      },
+      {
+        "name": "Jhonny",
+        "code": "70416",
+        "lastname": "Cabezas",
+        "mothername": "Gomez",
+        "email": "jhony@jhony.com",
+        "phone": "78198108",
+        "roles": ["Becario", "Estudiante"],
+        "degree": "",
+        "id": 12350
+      },
+      {
+        "name": "Jose",
+        "code": "00001",
+        "lastname": "Gil",
+        "mothername": "Burgoa",
+        "email": "amor@amorcito.com",
+        "phone": "70182881",
+        "roles": ["Docente"],
+        "degree": "PhD",
+        "id": 12352
+      },
+      {
+        "name": "Suvadra",
+        "code": "59841",
+        "lastname": "Checa",
+        "mothername": "Nanda",
+        "email": "suvi@suvi.com",
+        "phone": "72983018",
+        "roles": ["Estudiante", "Docente"],
+        "degree": "",
+        "id": 12353
+      },
+      {
+        "name": "Felix",
+        "code": "25872",
+        "lastname": "Halim",
+        "mothername": "Halim",
+        "email": "halim@halim.com",
+        "phone": "77219391",
+        "roles": ["Docente"],
+        "degree": "PhD",
+        "id": 12354
+      },
+      {
+        "name": "Zein",
+        "code": "68391",
+        "lastname": "Tonconi",
+        "mothername": "Mendoza",
+        "email": "zein.tonconi@gmail.com",
+        "phone": "70186881",
+        "roles": ["Estudiante", "Becario"],
+        "degree": "",
+        "id": 12355
+      },
+      {
+        "name": "Ivan",
+        "code": "87291",
+        "lastname": "Baptista",
+        "mothername": "Baptista",
+        "email": "ivan@baptista.com",
+        "phone": "67398383",
+        "roles": ["Docente de Planta"],
+        "degree": "Ing.",
+        "id": 12356
+      },
+      {
+        "name": "Zein",
+        "code": "82910",
+        "lastname": "Tonconi",
+        "mothername": "Mendoza",
+        "email": "zein@zein.com",
+        "phone": "70186881",
+        "roles": ["Becario"],
+        "degree": "",
+        "id": 12357
+      }
+    ],
+    "professorRoles": [
+      { "name": "Docente", "id": 2 },
+      { "name": "Docente de Planta", "id": 3 },
+      { "name": "Docente por materia", "id": 4 },
+      { "name": "Jefe de Carrera", "id": 5 }
+    ],
+    "studentRoles": [
+      { "name": "Estudiante", "id": 2 },
+      { "name": "Becario", "id": 3 },
+      { "name": "En proceso de Graduación", "id": 4 },
+      { "name": "Para certificaciones", "id": 5 }
+    ]
+  }
+  

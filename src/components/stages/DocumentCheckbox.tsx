@@ -1,10 +1,10 @@
 import { FC, useState } from "react";
 import { Checkbox, Paper, Typography } from "@mui/material";
+import { FormikProps } from "formik";
+import dayjs from "dayjs";
 import DownloadButton from "../common/DownloadButton";
 import { letters } from "../../constants/letters";
-import { FormikProps } from "formik";
 import { Seminar } from "../../models/studentProcess";
-import dayjs from "dayjs";
 import { MentorFormValues } from "../../hooks/useMentorFormik";
 import { Carrer } from "../../store/carrerStore";
 
@@ -51,7 +51,7 @@ const DocumentCheckbox: FC<DocumentCheckboxProps> = ({ disabled, formik, carrer,
           disabled={disabled}
         />
         <Typography variant="body2" sx={{ flexGrow: 1 }}>
-          Carta de Asignación de Tutor Presentada
+          {"Carta de Asignación de Tutor Presentada"}
         </Typography>
         <DownloadButton
           url={TUTOR_ASSIGNMENT.path}
@@ -88,7 +88,7 @@ const DocumentCheckbox: FC<DocumentCheckboxProps> = ({ disabled, formik, carrer,
           disabled={disabled}
         />
         <Typography variant="body2" sx={{ flexGrow: 1 }}>
-          Carta de Aprobación de Tutor Presentada
+          {"Carta de Aprobación de Tutor Presentada"}
         </Typography>
         <DownloadButton
           url={TUTOR_APPROBAL.path}
@@ -105,6 +105,9 @@ const DocumentCheckbox: FC<DocumentCheckboxProps> = ({ disabled, formik, carrer,
             ano: dayjs().format("YYYY"),
             title_project: process?.project_name || "",
             date: dayjs(formik.values.date_tutor_assignament).format("DD/MM/YYYY"),
+            isTesis: process?.modality_id === 3 ? "  X" : "",
+            isProject: process?.modality_id === 1 ? "  X" : "",
+            isJob: process?.modality_id === 2 ? "  X" : "",
           }}
           filename={`${TUTOR_APPROBAL.filename}_${formik.values.mentorName}.${TUTOR_APPROBAL.extention}`}
         />
