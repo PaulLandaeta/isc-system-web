@@ -14,5 +14,5 @@ export interface IUserDataStore {
   setMenu: (userMenu: MenuCategory[]) => void;
   addSinglePermission: (permission: string) => void;
   addPermissions: (permissions: string[]) => void;
-  clearAllUserData: () => void;
+  clearUser: () => void;
 }

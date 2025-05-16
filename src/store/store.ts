@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Seminar } from '../models/studentProcess';
-import { UserResponse } from '../services/models/LoginResponse';
 import { IUserDataStore } from '../models/userModel';
 import { MenuCategory } from '../models/menuModel';
 
@@ -10,26 +9,7 @@ interface IProcessStore {
   setProcess: (newProcess: Seminar) => void;
 }
 
-interface IUserStore {
-  user: UserResponse | null;
-  setUser: (user: UserResponse | null) => void;
-  clearUser: () => void;
-}
-
-export const useUserStore = create<IUserStore>()(
-  persist(
-    (set) => ({
-      user: null,
-      setUser: (user) => set({ user }),
-      clearUser: () => set({ user: null }),
-    }),
-    {
-      name: 'user-storage', // clave en localStorage
-    }
-  )
-);
-
-export const useUserDataStore = create<IUserDataStore>()(
+export const useUserStore = create<IUserDataStore>()(
   persist(
     (set) => ({
       id: -1,
@@ -73,7 +53,7 @@ export const useUserDataStore = create<IUserDataStore>()(
           return { permissions: newPermissions };
         }),
 
-      clearAllUserData: () => {
+      clearUser: () => {
         set(() => ({
           id: -1,
           name: '',
