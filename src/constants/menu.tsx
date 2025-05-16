@@ -21,7 +21,7 @@ import ListItemText from "@mui/material/ListItemText";
 import { Divider, ListItemButton } from "@mui/material";
 import ListSubheader from "@mui/material/ListSubheader";
 
-import { useUserDataStore } from "../store/store";
+import { useUserStore } from "../store/store";
 interface MenuProps {
   open: boolean;
 }
@@ -33,7 +33,7 @@ const Menu: React.FC<MenuProps> = ({ open }) => {
     navigate(path);
   };
 
-  const menuData = useUserDataStore((state) => state.menu);
+  const menuData = useUserStore((state) => state.menu);
 
   const getItemIcon = (icon: string) => {
     switch (icon) {
