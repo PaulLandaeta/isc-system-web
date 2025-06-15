@@ -9,7 +9,6 @@ import TutoringCard from "./component/TutoringCard";
 import StudentCard from "./component/StudentCard";
 import { UserResponse } from "../../services/models/LoginResponse";
 
-
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;

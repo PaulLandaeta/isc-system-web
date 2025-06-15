@@ -10,7 +10,7 @@ import { periods, currentPeriod } from "../../data/periods";
 import { useProcessStore } from "../../store/store";
 import { updateProcess } from "../../services/processServicer";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
-import {Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import {
   FormControl,
   FormControlLabel,
@@ -52,7 +52,7 @@ export const RegistrationStage: FC<RegistrationStageProps> = ({ onNext }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [, setError] = useState<any | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [edited, setEdited] = useState(false)
+  const [edited, setEdited] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -89,9 +89,9 @@ export const RegistrationStage: FC<RegistrationStageProps> = ({ onNext }) => {
     validationSchema,
     onSubmit: () => {
       if (!edited) {
-        onNext()
+        onNext();
       } else {
-        setShowModal(true)
+        setShowModal(true);
       }
     },
   });
@@ -101,16 +101,17 @@ export const RegistrationStage: FC<RegistrationStageProps> = ({ onNext }) => {
   };
 
   const handleOnChange = (event: any) => {
-    setEdited(true)
+    setEdited(true);
     formik.handleChange(event);
-  }
+  };
 
   return (
     <>
-      <Typography variant="h6" gutterBottom style={{ fontWeight: 'bold' }}>
-        Etapa 1: Seminario de Grado <ModeEditIcon onClick={editForm} style={{ cursor: "pointer" }} />
+      <Typography variant="h6" gutterBottom style={{ fontWeight: "bold" }}>
+        Etapa 1: Seminario de Grado{" "}
+        <ModeEditIcon onClick={editForm} style={{ cursor: "pointer" }} />
       </Typography>
-  
+
       <form onSubmit={formik.handleSubmit} className="mt-5 mx-16">
         <Grid container spacing={3}>
           <Grid item xs={12} sm={12} md={7} lg={8}>

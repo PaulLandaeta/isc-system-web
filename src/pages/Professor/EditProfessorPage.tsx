@@ -1,7 +1,16 @@
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { FormContainer } from "../CreateGraduation/components/FormContainer";
-import { Button, Divider, Grid, TextField, Typography, Snackbar, Alert, MenuItem } from "@mui/material";
+import {
+  Button,
+  Divider,
+  Grid,
+  TextField,
+  Typography,
+  Snackbar,
+  Alert,
+  MenuItem,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { getUserById } from "../../services/studentService";
 import { useParams } from "react-router-dom";
@@ -34,7 +43,7 @@ const EditProfessorPage = () => {
       const response = await getUserById(Number(id));
       formik.setValues({
         ...response,
-        roles: [2], 
+        roles: [2],
         role_id: 2,
         isStudent: false,
         is_scholarship: false,
@@ -73,7 +82,7 @@ const EditProfessorPage = () => {
           role_id: 2,
           roles: [2],
           isStudent: false,
-          is_scholarship: false
+          is_scholarship: false,
         };
         // @ts-ignore
         await updateProfessor(updatedValues);
@@ -251,22 +260,22 @@ const EditProfessorPage = () => {
                 <Button variant="contained" color="primary" type="submit">
                   GUARDAR
                 </Button>
-                </Grid>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
       </form>
       <Snackbar
-          open={open}
-          autoHideDuration={6000}
-          onClose={handleClose}
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        >
-          <Alert onClose={handleClose} severity={severity} sx={{ width: "100%" }}>
-            {message}
-          </Alert>
-        </Snackbar>
-      </FormContainer>
-    );
-  };
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert onClose={handleClose} severity={severity} sx={{ width: "100%" }}>
+          {message}
+        </Alert>
+      </Snackbar>
+    </FormContainer>
+  );
+};
 export default EditProfessorPage;

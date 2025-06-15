@@ -1,7 +1,7 @@
 import { useState } from "react";
 import LogoUPB from "../../assets/upb_logo.png";
 import { useNavigate } from "react-router-dom";
-import { authenticateUser } from "../../services/authService";
+import { authenticateUser } from "../../services/authServiceDataBaseJson";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { ErrorMessage } from "../../components/common/ErrorMessage";
@@ -11,7 +11,7 @@ import { roles } from "../../constants/roles";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { setUser } = useUserStore();
+  const { login: storeLogin } = useUserStore(); //congruencia con el user store y usar el setToken
   const { ADMIN, PROFESSOR, STUDENT, INTERN, PROGRAM_DIRECTOR, SUPERVISOR } = roles;
 
   const [isLoading, setIsLoading] = useState(false);
@@ -31,16 +31,27 @@ const LoginPage = () => {
       setError("");
       setIsLoading(true);
       try {
+        console.log("values", values);
+
         const isAuthenticated = await authenticateUser(values.email, values.password);
+        console.log("isAuthenticated", isAuthenticated);
         if (isAuthenticated) {
           const dashboardInterns = [INTERN, SUPERVISOR];
+
           const dashboardProcess = [ADMIN, STUDENT, PROFESSOR, PROGRAM_DIRECTOR];
           localStorage.setItem("token", isAuthenticated.token);
-          setUser(isAuthenticated);
-          if (isAuthenticated.roles.some((role) => dashboardProcess.includes(role))) {
+
+          storeLogin(
+            isAuthenticated.user,
+            isAuthenticated.menu,
+            isAuthenticated.permissions,
+            isAuthenticated.token
+          ); //congruencia con el user store y usar el setToken
+
+          if (dashboardProcess.includes(isAuthenticated.user.role)) {
             navigate("/dashboard");
           }
-          if (isAuthenticated.roles.some((role) => dashboardInterns.includes(role))) {
+          if (dashboardInterns.includes(isAuthenticated.user.role)) {
             navigate("/scholarshipHours");
           }
         } else {

@@ -11,7 +11,7 @@ interface DownloadButtonProps extends ButtonProps {
   filename: string;
   buttonText?: string;
   disabled?: boolean;
-  onClick?: () => void; 
+  onClick?: () => void;
 }
 
 const DownloadButton: React.FC<DownloadButtonProps> = ({
@@ -25,7 +25,6 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
 }) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const handleDownload = async () => {
-
     if (onClick) {
       onClick();
     }

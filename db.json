@@ -392,6 +392,17 @@
       "roles": ["Becario"],
       "degree": "",
       "id": 12357
+    },
+    {
+      "name": "Paul",
+      "code": "12357",
+      "lastname": "Landaeta",
+      "mothername": "Flores",
+      "email": "paul.landaeta@upb.edu",
+      "phone": "123456789",
+      "roles": ["admin"],
+      "degree": "",
+      "id": 5
     }
   ],
   "professorRoles": [
@@ -428,6 +439,87 @@
     {
       "name": "Para certificaciones",
       "id": 5
+    }
+  ],
+  "login": [
+    {
+      "user": {
+        "id": "5",
+        "name": "Paul",
+        "token": "abcdef123456",
+        "email": "paul.landaeta@upb.edu",
+        "password": "123456",
+        "role": "admin",
+        "phone": "123456789"
+      },
+      "menu": [
+        {
+          "category": "students",
+          "items": [
+            {
+              "id": 2,
+              "name": "Students",
+              "displayName": "Estudiantes",
+              "icon": "people",
+              "path": "/students"
+            },
+            {
+              "id": 3,
+              "name": "Courses",
+              "displayName": "Cursos",
+              "icon": "book",
+              "path": "/courses"
+            },
+            {
+              "id": 4,
+              "name": "GraduationProcess",
+              "displayName": "Proceso de Graduación",
+              "icon": "school",
+              "path": "/graduation-process"
+            }
+          ]
+        }
+      ],
+      "permissions": ["students:edit", "students:delete", "students:read"]
+    },
+    {
+      "user": {
+        "id": "6",
+        "name": "Alexis",
+        "email": "alexismarechal@upb.edu",
+        "password": "123456",
+        "role": "admin",
+        "phone": "123456789"
+      },
+      "menu": [
+        {
+          "category": "students",
+          "items": [
+            {
+              "id": 2,
+              "name": "Students",
+              "displayName": "Estudiantes",
+              "icon": "people",
+              "path": "/students"
+            },
+            {
+              "id": 3,
+              "name": "Courses",
+              "displayName": "Cursos",
+              "icon": "book",
+              "path": "/courses"
+            },
+            {
+              "id": 4,
+              "name": "GraduationProcess",
+              "displayName": "Proceso de Graduación",
+              "icon": "school",
+              "path": "/graduation-process"
+            }
+          ]
+        }
+      ],
+      "permissions": ["students:edit", "students:delete", "students:read"]
     }
   ]
 }

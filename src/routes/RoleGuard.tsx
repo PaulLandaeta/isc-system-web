@@ -9,6 +9,7 @@ interface RoleGuardProps {
 
 const RoleGuard: React.FC<RoleGuardProps> = ({ allowedRoles, children }) => {
   const user = useUserStore((state) => state.user);
+  console.log;
   const navigate = useNavigate();
 
   if (!user) {
@@ -34,15 +35,15 @@ const RoleGuard: React.FC<RoleGuardProps> = ({ allowedRoles, children }) => {
     );
   }
 
-  const userRoles = user.roles ?? [];
+  const userRoles = user.role ?? [];
 
   const hasRole = allowedRoles.some((role) => userRoles.includes(role));
 
   useEffect(() => {
     if (!hasRole) {
-      navigate("/error", { 
+      navigate("/error", {
         replace: true,
-        state: { fromRoleGuard: true }
+        state: { fromRoleGuard: true },
       });
     }
   }, [hasRole]);

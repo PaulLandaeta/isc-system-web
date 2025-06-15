@@ -17,7 +17,7 @@ interface ProcessFormProps {
   isClosed: () => void;
 }
 
-function ProcessForm({isVisible, isClosed}: ProcessFormProps) {
+function ProcessForm({ isVisible, isClosed }: ProcessFormProps) {
   const [, setError] = useState<string | null>(null);
   const [students, setStudents] = useState<Student[]>([]);
   const [modes, setModes] = useState<Modes[]>([]);
@@ -120,16 +120,16 @@ function ProcessForm({isVisible, isClosed}: ProcessFormProps) {
     <Modal open={isVisible} onClose={isClosed}>
       <Box
         sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          bgcolor: 'background.paper',
-          boxShadow: 24, 
-          p: 4, 
-          width: '80%', 
-          maxWidth: '100vh', 
-          maxHeight: "80vh", 
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          bgcolor: "background.paper",
+          boxShadow: 24,
+          p: 4,
+          width: "80%",
+          maxWidth: "100vh",
+          maxHeight: "80vh",
           overflowY: "auto",
           borderRadius: 2,
         }}
@@ -138,9 +138,9 @@ function ProcessForm({isVisible, isClosed}: ProcessFormProps) {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Typography variant="h4">Crear Proceso de Graduación</Typography>
-              <Typography variant="body2" sx={{ fontSize: 14, color: 'gray' }}>
-                Completa los siguientes campos para definir los criterios y requisitos del proceso de
-                graduación.
+              <Typography variant="body2" sx={{ fontSize: 14, color: "gray" }}>
+                Completa los siguientes campos para definir los criterios y requisitos del proceso
+                de graduación.
               </Typography>
               <Divider flexItem sx={{ my: 2 }} />
             </Grid>
@@ -237,7 +237,8 @@ function ProcessForm({isVisible, isClosed}: ProcessFormProps) {
                     helperText={formik.touched.period && formik.errors.period}
                   >
                     {setPeriods(numberPeriods).map((value) => {
-                      const desc = value.slice(0, value.length - 4) + '-' + value.slice(value.length - 4);
+                      const desc =
+                        value.slice(0, value.length - 4) + "-" + value.slice(value.length - 4);
                       return <MenuItem value={value}>{desc}</MenuItem>;
                     })}
                   </TextField>
@@ -249,7 +250,12 @@ function ProcessForm({isVisible, isClosed}: ProcessFormProps) {
             <Grid item xs={12}>
               <Grid container spacing={2} justifyContent="flex-end">
                 <Grid item>
-                  <LoadingButton variant="contained" color="primary" type="submit" loading={loading}>
+                  <LoadingButton
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    loading={loading}
+                  >
                     GUARDAR
                   </LoadingButton>
                 </Grid>

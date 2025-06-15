@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Seminar } from '../models/studentProcess';
 import { IUserDataStore } from '../models/userModel';
+import { User } from '../models/userInterface';
 import { MenuCategory } from '../models/menuModel';
 
 interface IProcessStore {
@@ -12,57 +13,17 @@ interface IProcessStore {
 export const useUserStore = create<IUserDataStore>()(
   persist(
     (set) => ({
-      id: -1,
-      name: '',
-      username: '',
-      role: '',
-      token: '',
+      user: {} as User,
       menu: [],
       permissions: [],
+      token: '',
 
-      setUserData: (newId: number, newName: string, newUsername: string, newRole: string) => {
-        set(() => ({
-          id: newId,
-          name: newName,
-          username: newUsername,
-          role: newRole,
-        }));
-      },
-      setToken: (newToken: string) => {
-        set(() => ({
-          token: newToken,
-        }));
+      login: (userP: User, menuP: MenuCategory[], permissionsP: string[]) => {
+        set({ user: userP, menu: menuP, permissions: permissionsP });
       },
 
-      setMenu: (userMenu: MenuCategory[]) => {
-        set(() => ({
-          menu: userMenu,
-        }));
-      },
-
-      addSinglePermission: (permission: string) =>
-        set((state) => {
-          const newPermissions = [...state.permissions];
-          newPermissions.push(permission);
-          return { permissions: newPermissions };
-        }),
-      addPermissions: (permissions: string[]) =>
-        set((state) => {
-          const newPermissions = [...state.permissions];
-          newPermissions.push(...permissions);
-          return { permissions: newPermissions };
-        }),
-
-      clearUser: () => {
-        set(() => ({
-          id: -1,
-          name: '',
-          username: '',
-          role: '',
-          token: '',
-          menu: [],
-          permissions: [],
-        }));
+      logout: () => {
+        set({ user: {} as User, menu: [], permissions: [] });
       },
     }),
     {

@@ -154,20 +154,20 @@ const GraduationProcessPage = () => {
             placeholder="Buscar por nombre de estudiante"
             value={search}
             onChange={handleSearchChange}
-                        sx={{
-                          '& .MuiOutlinedInput-root': {
-                            '&:hover fieldset': {
-                              borderColor: 'secondary.main',
-                            },
-                            '&.Mui-focused fieldset': {
-                              borderColor: 'secondary.main',
-                            },
-                          },
-                          '& input': {
-                            outline: 'none !important',
-                            boxShadow: 'none !important',
-                          },
-                        }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "&:hover fieldset": {
+                  borderColor: "secondary.main",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "secondary.main",
+                },
+              },
+              "& input": {
+                outline: "none !important",
+                boxShadow: "none !important",
+              },
+            }}
           />
         </div>
       </div>
@@ -222,26 +222,26 @@ const GraduationProcessPage = () => {
               columnHeaderTitle: "!font-bold text-center",
             }}
             slotProps={{
-                columnsManagement: {
-                  autoFocusSearchField: false,
-                  searchInputProps: {
-                    sx: {
-                      "& .MuiOutlinedInput-root": {
-                        "&:hover fieldset": {
-                          borderColor: "secondary.main",
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "secondary.main",
-                        },
+              columnsManagement: {
+                autoFocusSearchField: false,
+                searchInputProps: {
+                  sx: {
+                    "& .MuiOutlinedInput-root": {
+                      "&:hover fieldset": {
+                        borderColor: "secondary.main",
                       },
-                      "& input": {
-                        outline: "none !important",
-                        boxShadow: "none !important",
+                      "&.Mui-focused fieldset": {
+                        borderColor: "secondary.main",
                       },
+                    },
+                    "& input": {
+                      outline: "none !important",
+                      boxShadow: "none !important",
                     },
                   },
                 },
-              }}
+              },
+            }}
           />
         </Paper>
       </Box>
