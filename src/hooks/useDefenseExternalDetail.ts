@@ -1,22 +1,37 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getDefenseDetail } from '../services/defenseDetail';
-import { DefenseDetail } from '../services/models/DefenseDetail';
 
-const DEFENSE_INTERNAL = 'external';
+interface DefenseResponse {
+  success: boolean;
+  message: string;
+  error: string | null;
+  code: number;
+  data?: unknown;
+}
 
-export const useDefenseExternalDetail = (processId: number | null) => {
-  const [defenseDetail, setDefenseDetail] = useState<DefenseDetail | null>(null);
+const useDefenseExternalDetail = (processId: number) => {
+  const [defenseDetail, setDefenseDetail] = useState<DefenseResponse | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (processId) {
-      const fetchDefenseDetail = async () => {
-        const internalDefense = await getDefenseDetail(processId, DEFENSE_INTERNAL);
-        setDefenseDetail(internalDefense);
-      };
+    const fetchDetail = async () => {
+      try {
+        const response = await getDefenseDetail(processId, 'external');
+        setDefenseDetail(response);
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      fetchDefenseDetail();
+    if (processId) {
+      fetchDetail();
     }
   }, [processId]);
 
-  return defenseDetail;
+  return { defenseDetail, loading, error };
 };
+
+export default useDefenseExternalDetail;

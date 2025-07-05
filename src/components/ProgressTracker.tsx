@@ -75,13 +75,17 @@ const ProgressTracker: FC<ProgressTrackerProps> = ({ currentStepIndex }) => {
         {steps.map((label, index) => (
           <Step
             key={index}
-            completed={index <= (process?.stage_id || 1)}
+            completed={
+              index < (process?.stage_id ?? 0) ||
+              (index === process?.stage_id && process?.status === "finalizado")
+            }
             onClick={handleStep(index)}
           >
             <StepLabel>{label}</StepLabel>
           </Step>
         ))}
       </Stepper>
+
       <Box className="m-5 p-5 w-full">{renderStage()}</Box>
       <Snackbar
         open={alertOpen}
