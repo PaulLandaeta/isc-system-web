@@ -59,7 +59,8 @@ export const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) =>
 
   const saveStage = async () => {
     if (process) {
-      const { reviewer, reviewerDesignationLetterSubmitted, reviewerApprovalLetterSubmitted } = formik.values;
+      const { reviewer, reviewerDesignationLetterSubmitted, reviewerApprovalLetterSubmitted } =
+        formik.values;
       process.reviewer_approval = reviewerApprovalLetterSubmitted;
       process.reviewer_letter = reviewerDesignationLetterSubmitted;
       process.reviewer_id = Number(reviewer);
@@ -234,8 +235,11 @@ export const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) =>
           <Button type="button" variant="contained" color="secondary" onClick={onPrevious}>
             Anterior
           </Button>
-          <Button type="submit" variant="contained" color="primary"
-          disabled={
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={
               !formik.values.reviewerDesignationLetterSubmitted ||
               !formik.values.reviewerApprovalLetterSubmitted
             }

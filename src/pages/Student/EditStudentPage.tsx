@@ -8,7 +8,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { IconButton } from "@mui/material";
 
-
 const PHONE_ERROR_MESSAGE = "Ingrese un número de teléfono válido.";
 const validationSchema = Yup.object({
   name: Yup.string().required("El nombre completo es obligatorio"),

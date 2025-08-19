@@ -38,7 +38,7 @@ const validationSchema = Yup.object({
     .required("El apellido materno es obligatorio"),
 
   email: Yup.string()
-    .matches(emailRegex,"Ingrese un correo electrónico válido")
+    .matches(emailRegex, "Ingrese un correo electrónico válido")
     .max(50, "Máximo 50 caracteres")
     .required("El correo electrónico es obligatorio"),
 
@@ -50,7 +50,7 @@ const validationSchema = Yup.object({
 
   total_hours: Yup.number()
     .min(0, "Las horas no pueden ser negativas.")
-    .when("isIntern",{
+    .when("isIntern", {
       is: true,
       then: (schema) => schema.required("Las horas becarias son obligatorias."),
       otherwise: (schema) => schema.nullable(),
@@ -85,7 +85,7 @@ const CreateStudentForm = ({ onSuccess }: { onSuccess: () => void }) => {
             pending_hours: 0,
           });
         } else {
-          await createStudent(rest );
+          await createStudent(rest);
         }
         setSuccessDialog(true);
         setTimeout(() => {
@@ -120,7 +120,7 @@ const CreateStudentForm = ({ onSuccess }: { onSuccess: () => void }) => {
 
   return (
     <Container>
-      <form onSubmit={formik.handleSubmit} style={{ marginLeft: -20}}>
+      <form onSubmit={formik.handleSubmit} style={{ marginLeft: -20 }}>
         <Grid container spacing={1}>
           <Grid item xs={12}>
             <Typography variant="h4">Crear Nuevo Estudiante</Typography>

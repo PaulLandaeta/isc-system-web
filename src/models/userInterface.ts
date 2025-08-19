@@ -1,18 +1,14 @@
-import { Role } from './roleInterface';
-
 export interface User {
   id: number;
   username: string;
   name: string;
   lastname: string;
   mothername: string;
-  password: string;
   email: string;
   code: string;
   phone: string;
   degree: string;
-  roles: number[];
-  rolesAndPermissions?: { [id: number]: Role };
+  role: string;
 }
 
 export interface UserRequest {

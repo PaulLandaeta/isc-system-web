@@ -3,7 +3,6 @@ import { Link, useLocation } from "react-router-dom";
 import { Alert, Snackbar } from "@mui/material";
 
 const ErrorPage = () => {
-
   const location = useLocation();
   const fromRoleGuard = location.state?.fromRoleGuard;
 
@@ -29,8 +28,7 @@ const ErrorPage = () => {
       <Link to="/" className="mt-6 text-blue-500 text-lg">
         Volver al inicio
       </Link>
-      {
-        fromRoleGuard && 
+      {fromRoleGuard && (
         <Snackbar
           open={open}
           autoHideDuration={6000}
@@ -41,8 +39,7 @@ const ErrorPage = () => {
             No tienes permiso para acceder a esta página.
           </Alert>
         </Snackbar>
-      }
-
+      )}
     </div>
   );
 };

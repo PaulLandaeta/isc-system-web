@@ -15,10 +15,7 @@ const CreateProcessPage = () => {
   return (
     <FormContainer>
       <button onClick={handleOpenModal}>Abrir proceso</button>
-      <ProcessForm
-        isVisible={openModal}
-        isClosed={handleCloseModal}
-      />
+      <ProcessForm isVisible={openModal} isClosed={handleCloseModal} />
     </FormContainer>
   );
 };

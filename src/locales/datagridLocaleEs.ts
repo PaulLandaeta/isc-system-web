@@ -19,9 +19,7 @@ const dataGridLocaleText = {
   columnHeaderSortIconLabel: 'Ordenar',
 
   columnHeaderFiltersTooltipActive: (count: number) =>
-    count !== 1
-      ? `${count} filtros activos`
-      : `${count} filtro activo`,
+    count !== 1 ? `${count} filtros activos` : `${count} filtro activo`,
   toolbarColumns: 'Columnas',
   toolbarFilters: 'Filtros',
 

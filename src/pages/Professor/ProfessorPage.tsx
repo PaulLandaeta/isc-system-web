@@ -254,16 +254,18 @@ const ProfessorPage = () => {
   ];
 
   const getResponsiveColumns = (): GridColDef[] => {
-    const visibleColumns = columns.filter(col => columnVisibilityModel[col.field] !== false && col.field !== 'actions');
+    const visibleColumns = columns.filter(
+      (col) => columnVisibilityModel[col.field] !== false && col.field !== "actions"
+    );
     const dynamicFlex = visibleColumns.length > 0 ? Math.floor(12 / visibleColumns.length) : 1;
 
-    return columns.map(col => {
-      if (col.field === 'actions' || columnVisibilityModel[col.field] === false) return col;
+    return columns.map((col) => {
+      if (col.field === "actions" || columnVisibilityModel[col.field] === false) return col;
       return {
-          ...col,
-          flex: dynamicFlex,
-          minWidth: 100,
-          maxWidth: 200,
+        ...col,
+        flex: dynamicFlex,
+        minWidth: 100,
+        maxWidth: 200,
       };
     });
   };
@@ -326,13 +328,11 @@ const ProfessorPage = () => {
         setProfessors(newProfessors);
         showSnackbar("El docente fue eliminado correctamente", "success");
       } catch (error) {
-
         if (axios.isAxiosError(error) && error.response?.data?.error) {
           showSnackbar(error.response.data.error, "error");
         } else {
           showSnackbar("Error al eliminar el docente", "error");
         }
-        
       } finally {
         handleClose();
       }

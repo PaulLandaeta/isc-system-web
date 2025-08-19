@@ -1,10 +1,10 @@
 import axios from 'axios';
-import apiClient from './apiInstance';
+import jsonClient from './jsonServerInstance';
 import { UserResponse } from './models/LoginResponse';
 
 const authenticateUser = async (email: string, password: string): Promise<UserResponse> => {
   try {
-    const response = await apiClient.post(`auth/login`, { email, password });
+    const response = await jsonClient.post(`auth/login`, { email, password });
     if (response.status === 200) {
       return response.data.data;
     } else {

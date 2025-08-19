@@ -95,7 +95,7 @@ export const MentorStage: FC<InternalDefenseStageProps> = ({ onPrevious, onNext 
 
   return (
     <>
-      <Typography variant="h6"  gutterBottom style={{ fontWeight: 'bold' }}>
+      <Typography variant="h6" gutterBottom style={{ fontWeight: "bold" }}>
         Etapa 2: Seleccionar Tutor <ModeEditIcon onClick={editForm} style={{ cursor: "pointer" }} />
       </Typography>
 

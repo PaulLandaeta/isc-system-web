@@ -1,79 +1,54 @@
-import axios from 'axios';
-import apiClient from './apiInstance';
-import { UserResponse } from './models/LoginResponse';
+import jsonClient from './jsonServerInstance';
 
-const authenticateUser = async (email: string, password: string): Promise<UserResponse> => {
+const authenticateUser = async (email: string, password: string) => {
   try {
-    const response = await apiClient.get('/login', {
-      params: { email, password }
+    const response = await jsonClient.get('/login', {
+      params: {
+        'user.email': email,
+        'user.password': password,
+      },
     });
 
-    if (!response.data.length) {
-      throw new Error('Credenciales inválidas');
+    const data = response.data[0];
+
+    if (!data) {
+      throw new Error('Credenciales incorrectas');
     }
 
-    const loginData = response.data[0];
+    const { user, menu, permissions, token } = data;
 
-    const userRes = await apiClient.get('/users', {
-      params: { email: loginData.email }
-    });
-
-    if (!userRes.data.length) {
-      throw new Error('Usuario no encontrado');
-    }
-
-    const user = userRes.data[0];
-
-    const rolesPermissions: Record<string, { role_name: string; permissions: any[] }> = {};
-
-
-
-    for (const roleName of user.roles) {
-      const roleRes = await apiClient.get('/roles', {
-        params: { roleName }
-      });
-
-      const role = roleRes.data[0];
-      const roleId = role?.id ?? 0;
-
-      const permissionsRes = await apiClient.get('/permissions', {
-        params: { subtitle_like: roleName } // Simula asociación
-      });
-
-      const permissions: Permissions[] = permissionsRes.data?.flatMap((p: any) => p.permissions || []);
-
-      rolesPermissions[roleId] = {
-        role_name: roleName,
-        permissions
-      };
-    }
-
-    const result: UserResponse = {
-      id: user.id,
-      username: user.name.toLowerCase(),
-      name: user.name,
-      lastname: user.lastname,
-      mothername: user.mothername,
-      email: user.email,
-      phone: user.phone,
-      role_id: loginData.user?.role_id ?? 0,
-      roles: user.roles,
-      roles_permissions: rolesPermissions,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      code: user.code,
-      token: loginData.token
+    // Adaptamos el objeto al tipo UserResponse
+    const userResponse = {
+      user: {
+        id: parseInt(user.id),
+        username: user.username || user.email, // o null si no hay
+        name: user.name,
+        lastname: user.lastname || '',
+        mothername: user.mothername || '',
+        email: user.email,
+        code: user.code || '',
+        phone: user.phone,
+        degree: user.degree || '',
+        role: user.role,
+      },
+      token: token || 'fake-jwt-token',
+      menu: menu.map((category: any) => ({
+        category: category.category,
+        items: category.items.map((item: any) => ({
+          name: item.name,
+          path: item.path,
+          displayname: item.displayName,
+          icon: item.icon,
+        })),
+      })),
+      permissions,
     };
 
-    return result;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw new Error(error.response?.data?.message || 'Error de red');
-    } else {
-      throw new Error('Ocurrió un error inesperado');
-    }
+    return userResponse;
+  } catch (error: any) {
+    console.error('Error en login:', error.message);
+    throw new Error('Login fallido: ' + error.message);
   }
 };
 
-export { authenticateUser };
-
+export { authenticateUser }; // Corregido el nombre de la exportación

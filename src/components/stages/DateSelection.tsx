@@ -5,7 +5,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { FormikProps } from "formik";
 import { MentorFormValues } from "../../hooks/useMentorFormik";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 
 interface DateSelectionProps {
   disabled: boolean;
@@ -26,7 +26,7 @@ const DateSelection: FC<DateSelectionProps> = ({ disabled, formik, renderFieldEr
           onChange={(value) => formik.setFieldValue("date_tutor_assignament", value)}
           format="DD/MM/YYYY"
           minDate={currentDate}
-          maxDate={currentDate.add(1,'year')}
+          maxDate={currentDate.add(1, "year")}
         />
       </LocalizationProvider>
       {renderFieldError("date_tutor_assignament")}
