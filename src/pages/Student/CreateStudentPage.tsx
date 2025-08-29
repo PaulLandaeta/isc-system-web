@@ -22,28 +22,46 @@ import ErrorDialog from "../../components/common/ErrorDialog";
 import { createIntern } from "../../services/internService";
 import {
   PHONE_ERROR_MESSAGE,
+  CODE_ERROR_MESSAGE,
   CODE_DIGITS,
+  CODE_MIN_DIGITS,
   PHONE_DIGITS,
+  LETTERS_REGEX,
+  EMAIL_REGEX,
   PHONE_REGEX,
   CODE_REGEX,
 } from "../../constants/validation";
 const validationSchema = Yup.object({
-  name: Yup.string().required("El nombre completo es obligatorio"),
-  lastname: Yup.string().required("El apellido es obligatorio"),
-  mothername: Yup.string().required("El apellido materno es obligatorio"),
+  name: Yup.string()
+    .max(20, "Máximo 20 caracteres")
+    .matches(LETTERS_REGEX, "Solo letras y espacios")
+    .required("El nombre completo es obligatorio"),
+  lastname: Yup.string()
+    .max(20, "Máximo 20 caracteres")
+    .matches(LETTERS_REGEX, "Solo letras y espacios")
+    .required("El apellido es obligatorio"),
+  mothername: Yup.string()
+    .max(20, "Máximo 20 caracteres")
+    .matches(LETTERS_REGEX, "Solo letras y espacios")
+    .required("El apellido materno es obligatorio"),
   email: Yup.string()
-    .email("Ingrese un correo electrónico válido")
+    .matches(EMAIL_REGEX, "Ingrese un correo electrónico válido")
+    .max(50, "Máximo 50 caracteres")
     .required("El correo electrónico es obligatorio"),
   phone: Yup.string()
     .matches(PHONE_REGEX, PHONE_ERROR_MESSAGE)
     .required("El número de teléfono es obligatorio"),
   code: Yup.string()
-    .matches(CODE_REGEX, `El código debe tener hasta ${CODE_DIGITS} dígitos`)
+    .matches(CODE_REGEX, CODE_ERROR_MESSAGE)
     .required("El código de estudiante es obligatorio"),
   isIntern: Yup.boolean(),
-  total_hours: Yup.number().when("isIntern", (isIntern, schema) => {
-    return isIntern ? schema.required("Las horas becarias son obligatorias") : schema.nullable();
-  }),
+  total_hours: Yup.number()
+    .min(0, "Las horas no pueden ser negativas.")
+    .when("isIntern", {
+      is: true,
+      then: (schema) => schema.required("Las horas becarias son obligatorias."),
+      otherwise: (schema) => schema.nullable(),
+    }),
 });
 
 const CreateStudentPage = () => {
@@ -74,7 +92,7 @@ const CreateStudentPage = () => {
       mothername: "",
       email: "",
       phone: "",
-      code: 0,
+      code: "",
       isIntern: false,
       total_hours: 0,
     },
@@ -90,16 +108,31 @@ const CreateStudentPage = () => {
             pending_hours: 0,
           });
         } else {
-          // @ts-ignore
-          await createStudent(rest);
+          await createStudent({
+            ...rest,
+            is_scholarship: false,
+          });
         }
         setMessage("Estudiante creado con éxito");
         setSeverity("success");
         setSuccessDialog(true);
         resetForm();
-      } catch (error) {
-        // @ts-ignore
-        setMessage(error.response.data.message);
+      } catch (error: any) {
+        let errorMessage = "Error al crear estudiante";
+        
+        if (error?.response?.data?.errors) {
+          errorMessage = error.response.data.errors;
+        } else if (error?.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        } else if (error?.response?.status === 409) {
+          errorMessage = "El correo electrónico o código ya está registrado";
+        } else if (error?.response?.status === 400) {
+          errorMessage = "Datos inválidos. Verifique la información ingresada";
+        } else if (error?.response?.status >= 500) {
+          errorMessage = "Error del servidor. Intente nuevamente";
+        }
+        
+        setMessage(errorMessage);
         setSeverity("error");
         setErrorDialog(true);
       }
@@ -117,6 +150,7 @@ const CreateStudentPage = () => {
     const value = event.target.value;
     if (/^[0-9]*$/.test(value)) {
       formik.setFieldValue("phone", value);
+      formik.setFieldTouched("phone", true);
     }
   };
 
@@ -124,6 +158,7 @@ const CreateStudentPage = () => {
     const value = event.target.value;
     if (/^[0-9]*$/.test(value)) {
       formik.setFieldValue("code", value);
+      formik.setFieldTouched("code", true);
     }
   };
 
