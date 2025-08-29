@@ -100,6 +100,12 @@ const CreateStudentPage = () => {
     onSubmit: async (values, { resetForm }) => {
       try {
         const { isIntern, total_hours, ...rest } = values;
+        
+        const studentData = {
+          ...rest,
+          is_scholarship: false,
+        };
+        
         if (isIntern) {
           await createIntern({
             ...rest,
@@ -108,10 +114,7 @@ const CreateStudentPage = () => {
             pending_hours: 0,
           });
         } else {
-          await createStudent({
-            ...rest,
-            is_scholarship: false,
-          });
+          await createStudent(studentData);
         }
         setMessage("Estudiante creado con éxito");
         setSeverity("success");
@@ -147,19 +150,11 @@ const CreateStudentPage = () => {
   };
 
   const handlePhoneChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    if (/^[0-9]*$/.test(value)) {
-      formik.setFieldValue("phone", value);
-      formik.setFieldTouched("phone", true);
-    }
+    formik.handleChange(event);
   };
 
   const handleCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    if (/^[0-9]*$/.test(value)) {
-      formik.setFieldValue("code", value);
-      formik.setFieldTouched("code", true);
-    }
+    formik.handleChange(event);
   };
 
   return (
@@ -200,6 +195,7 @@ const CreateStudentPage = () => {
                         fullWidth
                         value={formik.values.name}
                         onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
                         error={formik.touched.name && Boolean(formik.errors.name)}
                         helperText={formik.touched.name && formik.errors.name}
                         margin="normal"
@@ -214,6 +210,7 @@ const CreateStudentPage = () => {
                         fullWidth
                         value={formik.values.lastname}
                         onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
                         error={formik.touched.lastname && Boolean(formik.errors.lastname)}
                         helperText={formik.touched.lastname && formik.errors.lastname}
                         margin="normal"
@@ -230,6 +227,7 @@ const CreateStudentPage = () => {
                         fullWidth
                         value={formik.values.mothername}
                         onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
                         error={formik.touched.mothername && Boolean(formik.errors.mothername)}
                         helperText={formik.touched.mothername && formik.errors.mothername}
                         margin="normal"
@@ -244,6 +242,7 @@ const CreateStudentPage = () => {
                         fullWidth
                         value={formik.values.code}
                         onChange={handleCodeChange}
+                        onBlur={formik.handleBlur}
                         error={formik.touched.code && Boolean(formik.errors.code)}
                         helperText={formik.touched.code && formik.errors.code}
                         margin="normal"
@@ -270,6 +269,7 @@ const CreateStudentPage = () => {
                     fullWidth
                     value={formik.values.email}
                     onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                     error={formik.touched.email && Boolean(formik.errors.email)}
                     helperText={formik.touched.email && formik.errors.email}
                     margin="normal"
@@ -283,6 +283,7 @@ const CreateStudentPage = () => {
                     fullWidth
                     value={formik.values.phone}
                     onChange={handlePhoneChange}
+                    onBlur={formik.handleBlur}
                     error={formik.touched.phone && Boolean(formik.errors.phone)}
                     helperText={formik.touched.phone && formik.errors.phone}
                     margin="normal"
