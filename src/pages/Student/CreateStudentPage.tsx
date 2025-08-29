@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { FormContainer } from "../CreateGraduation/components/FormContainer";
@@ -16,7 +16,7 @@ import {
   FormControlLabel,
   IconButton,
 } from "@mui/material";
-import { createStudent } from "../../services/studentService";
+import { createStudent, getStudents } from "../../services/studentService";
 import SuccessDialog from "../../components/common/SucessDialog";
 import ErrorDialog from "../../components/common/ErrorDialog";
 import { createIntern } from "../../services/internService";
@@ -70,8 +70,23 @@ const CreateStudentPage = () => {
   const [errorDialog, setErrorDialog] = useState(false);
   const [message, setMessage] = useState("");
   const [severity, setSeverity] = useState<"success" | "error">("success");
+  const [studentCodes, setStudentCodes] = useState<Set<string>>(new Set());
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const response = await getStudents();
+        const students = response.data || [];
+        const codes = new Set<string>(students.map((s: any) => s.code.toString()));
+        setStudentCodes(codes);
+      } catch (error) {
+        setStudentCodes(new Set());
+      }
+    };
+    fetchStudents();
+  }, []);
 
   const handleBackNavigate = () => {
     navigate("/students");
@@ -99,6 +114,15 @@ const CreateStudentPage = () => {
     validationSchema,
     onSubmit: async (values, { resetForm }) => {
       try {
+        const codeStr = values.code.toString();
+
+        if (studentCodes.has(codeStr)) {
+          setMessage("El código de estudiante ya está en uso");
+          setSeverity("error");
+          setErrorDialog(true);
+          return;
+        }
+
         const { isIntern, total_hours, ...rest } = values;
         
         const studentData = {
@@ -116,6 +140,9 @@ const CreateStudentPage = () => {
         } else {
           await createStudent(studentData);
         }
+
+        setStudentCodes(new Set(studentCodes).add(codeStr));
+
         setMessage("Estudiante creado con éxito");
         setSeverity("success");
         setSuccessDialog(true);
@@ -127,6 +154,12 @@ const CreateStudentPage = () => {
           errorMessage = error.response.data.errors;
         } else if (error?.response?.data?.message) {
           errorMessage = error.response.data.message;
+          if (
+            errorMessage.toLowerCase().includes("código") &&
+            errorMessage.toLowerCase().includes("ya está en uso")
+          ) {
+            errorMessage = "El código de estudiante ya está en uso";
+          }
         } else if (error?.response?.status === 409) {
           errorMessage = "El correo electrónico o código ya está registrado";
         } else if (error?.response?.status === 400) {
