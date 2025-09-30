@@ -11,6 +11,17 @@ export interface Interns {
   updated_at: Dayjs;
 }
 
+export interface EventPerIntern extends Event {
+  event_id: number;
+  is_supervisor: boolean;
+  worked_hours: number;
+  type: string;
+  attendance: boolean;
+  registration_date: string;
+  last_update: string;
+  notes: string;
+}
+
 export interface InternsInformation extends Interns {
   id_intern: number;
   username: string;
@@ -34,15 +45,4 @@ export interface CompleteIntern extends Interns {
   full_name: string;
   code: number;
   events?: EventPerIntern[];
-}
-
-export interface EventPerIntern extends Event {
-  event_id: number;
-  is_supervisor: boolean;
-  worked_hours: number;
-  type: string;
-  attendance: boolean;
-  registration_date: string;
-  last_update: string;
-  notes: string;
 }
