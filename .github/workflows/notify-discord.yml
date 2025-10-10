@@ -1,0 +1,23 @@
+name: Notificar PR en Discord
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  notify:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Enviar información del PR a Discord
+        shell: bash
+        run: |
+          curl -H "Content-Type: application/json" \
+          -X POST \
+          -d "{
+            \"content\": \"Nuevo Pull Request\n\nRepositorio: isc-system-core\n\nPR ID: #${{ github.event.pull_request.number }}\n\nTítulo del PR: ${{ github.event.pull_request.title }}\n\nURL del PR: ${{ github.event.pull_request.html_url }}\n\nBranch origen: ${{ github.event.pull_request.head.ref }}\n\nBranch destino: ${{ github.event.pull_request.base.ref }}\n\nCambios: Ver Cambios\n\nRevisa la sección de Pull Requests del repositorio.\"
+          }" \
+          https://discordapp.com/api/webhooks/1426042253637586976/EB2wqw6arlcM5u93XfdEtYiAKgWrancgYLn1MIYatAWunuSR6T4x-ZEwHUR-4t1AOTN0
