@@ -66,16 +66,19 @@ const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) => {
   const [showDuplicateWarning, setShowDuplicateWarning] = useState<boolean>(false);
   const [originalReviewerId, setOriginalReviewerId] = useState<number | undefined>(undefined);
 
-  const isReadOnlyMode = () => {
-    if (!process) {
-      return true;
-    }
+  const isFullyApproved = () => {
+    return process?.reviewer_approval && process?.stage_id > CURRENT_STAGE;
+  };
 
-    if (process.stage_id > CURRENT_STAGE && process.reviewer_approval) {
-      return true;
-    }
+  const hasUnapprovedChanges = () => {
+    if (!process || !originalReviewerId) return false;
+    return formik?.values.reviewer !== originalReviewerId.toString();
+  };
 
-    return false;
+  const isReadOnlyMode = (): boolean => {
+    if (!process) return true;
+    
+    return Boolean(isFullyApproved() || (process.reviewer_approval && hasUnapprovedChanges()));
   };
 
   const [editMode, setEditMode] = useState<boolean>(isReadOnlyMode());
@@ -105,15 +108,23 @@ const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) => {
     },
     validationSchema,
     onSubmit: () => {
+     
+      if (isFullyApproved()) {
+        setShowWarningSnackbar(true);
+        return;
+      }
+
+    
+      if (process?.reviewer_approval && hasUnapprovedChanges()) {
+        setShowWarningSnackbar(true);
+        return;
+      }
+
       if (isDuplicateSelection(formik.values.reviewer)) {
         setShowDuplicateWarning(true);
         return;
       }
 
-      if (wasReviewerApproved() && originalReviewerId !== Number(formik.values.reviewer)) {
-        setShowWarningSnackbar(true);
-        return;
-      }
       setShowModal(true);
     },
   });
@@ -198,7 +209,7 @@ const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) => {
       await updateProcess(updatedProcess);
       setProcess(updatedProcess);
 
-      // Only proceed to next stage if approving and conditions are met
+
       if (shouldAdvanceToNextStage) {
         onNext();
       }
@@ -211,7 +222,7 @@ const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) => {
     try {
       await saveStage();
     } catch (error) {
-      // Handle error silently
+   
     } finally {
       setShowModal(false);
     }
@@ -219,6 +230,12 @@ const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) => {
 
   const handleMentorChange = (_event: React.ChangeEvent<unknown>, value: Mentor | null) => {
     const selectedId = value?.id?.toString() || "";
+
+
+    if (process?.reviewer_approval) {
+      setShowWarningSnackbar(true);
+      return;
+    }
 
     if (selectedId && process?.tutor_id && selectedId === process.tutor_id.toString()) {
       setShowDuplicateWarning(true);
@@ -237,10 +254,17 @@ const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) => {
   };
 
   const editForm = () => {
-    if (wasReviewerApproved()) {
+
+    if (isFullyApproved()) {
       setShowWarningSnackbar(true);
       return;
     }
+
+    if (process?.reviewer_approval && hasUnapprovedChanges()) {
+      setShowWarningSnackbar(true);
+      return;
+    }
+
     setEditMode(false);
   };
 
@@ -259,17 +283,18 @@ const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) => {
         <ModeEditIcon
           onClick = {editForm}
           style = {{
-            cursor: wasReviewerApproved() ? "not-allowed" : "pointer",
-            color: wasReviewerApproved() ? "#ccc" : "inherit",
+            cursor: "pointer",
+            color: isFullyApproved() ? "#ccc" : "inherit",
           }}
         />
       </div>
 
-      {wasReviewerApproved() && (
+      {isFullyApproved() && (
         <Alert severity = "warning" sx = {{ mb: 2 }} icon = {<WarningIcon />}>
-          <AlertTitle>{"Fase de Revisor Registrada"}</AlertTitle>
-          {"Esta fase ya ha sido completada y aprobada. No se puede editar el revisor porque \r"}
-          {"la fase ya ha sido registrada. Si necesita hacer cambios, contacte al administrador.\r"}
+          <AlertTitle>{"Fase de Revisor Aprobada"}</AlertTitle>
+          {"Esta fase ya ha sido aprobada. No se puede editar el revisor ni sus documentos porque \r"}
+          {"el proceso ha sido aprobado y registrado. Para realizar cambios excepcionales, por favor \r"}
+          {"contacte al administrador del sistema.\r"}
         </Alert>
       )}
 
@@ -469,8 +494,10 @@ const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) => {
         anchorOrigin = {{ vertical: "top", horizontal: "center" }}
       >
         <Alert onClose = {handleWarningSnackbarClose} severity = "warning" sx = {{ width: "100%" }}>
-          {"No se puede editar el revisor porque la fase ya ha sido registrada o aprobada.\r"}
-          {"Cualquier cambio requerirá reiniciar el proceso de aprobación.\r"}
+          <AlertTitle>{"No se puede modificar la fase de revisor"}</AlertTitle>
+          {isFullyApproved() 
+            ? "La fase ha sido aprobada y el proceso ha avanzado. No se permiten modificaciones en esta etapa."
+            : "No se pueden realizar cambios en el revisor una vez que ha sido aprobado. Contacte al administrador si necesita hacer modificaciones."}
         </Alert>
       </Snackbar>
 
