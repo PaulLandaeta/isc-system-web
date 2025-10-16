@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+yarn.lock
+yarn.lock.back
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -23,3 +26,10 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+# Contentlayer
+.contentlayer
+
+package-lock.json
+
+

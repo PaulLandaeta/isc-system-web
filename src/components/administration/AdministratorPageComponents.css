@@ -1,0 +1,21 @@
+.orange-header th {
+  background-color: #191d88;
+  color: #ffffff;
+}
+
+.large-header th {
+  font-size: larger;
+  font-weight: bold;
+}
+
+.border-table td,
+.border-table th {
+  border-right: 1px solid #ccc;
+  width: 85%;
+}
+
+.border-table td:last-child,
+.border-table th:last-child {
+  border-right: none;
+  width: 15%;
+}

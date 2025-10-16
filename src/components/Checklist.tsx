@@ -1,127 +1,160 @@
-import { FC } from "react";
+import dayjs from "dayjs";
 import {
   FaEnvelope,
-  FaCalendarCheck,
+  FaCalendar,
   FaUserTie,
-  FaUserSecret,
-  // FaUserShield,
-  // FaUserGraduate,
+  FaUser,
+  FaCheck,
+  FaClock,
+  FaMinus,
 } from "react-icons/fa";
+import { useEffect, useState } from "react";
 import { Seminar } from "../models/studentProcess";
+import { useProcessStore } from "../store/store";
+import { getUserById } from "../services/studentService";
 
-interface CheckListStageProps {
-  process: Seminar;
-}
+const Checklist = () => {
+  const process = useProcessStore((state) => state.process);
 
-const Checklist:FC<CheckListStageProps> = ({ process }) => {
-  
-  const { student_name: studentName, project_name: titleProject, modality_name: mode } = process;
-  const telegramLink = `https://t.me/+59176517816`;
+  const formattedTutorDate = process?.tutor_approval_date
+    ? dayjs(process.tutor_approval_date).format("DD/MM/YYYY")
+    : "";
+
+  const formattedReviewerDate = process?.reviewer_approval_date
+    ? dayjs(process.reviewer_approval_date).format("DD/MM/YYYY")
+    : "";
+
+  const {
+    student_name: studentName,
+    tutor_fullname: tutorFullname,
+    tutor_degree: tutorDegree,
+    reviewer_fullname: reviewerFullname,
+    reviewer_degree: reviewerDegree,
+    period,
+    tutor_approval: tutorApproval,
+    reviewer_approval: reviewerApproval,
+    stage_id: stageId,
+  } = process as Seminar;
+
+  const renderStatusIcon = (stage: number) => {
+  switch (stage) {
+    case 0:
+      return <FaCheck className="text-green-500 ml-auto" />;
+
+    case 1:
+      if (tutorApproval) {
+        return <FaCheck className="text-green-500 ml-auto" />;
+      }
+      if (stageId === 1) {
+        return <FaClock className="text-yellow-500 ml-auto" />;
+      }
+      return <FaMinus className="text-gray-400 ml-auto" />;
+
+    case 2:
+      if (reviewerApproval) {
+        return <FaCheck className="text-green-500 ml-auto" />;
+      }
+      return stageId >= 2 ? (
+        <FaClock className="text-yellow-500 ml-auto" />
+      ) : (
+        <FaMinus className="text-gray-400 ml-auto" />
+      );
+
+    default:
+      return <FaMinus className="text-gray-400 ml-auto" />;
+  }
+};
+  const [telegramLink, setTelegramLink] = useState<string>("");
+
+  const fetchUserData = async () => {
+    try {
+      const response = await getUserById(Number(process?.student_id));
+      setTelegramLink(`https://t.me/+591${response.phone}`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
   return (
-    <div className="h-full bg-white rounded-lg shadow-lg p-4 m-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold">{studentName}</h2>
-          <p className="text-gray-600">{titleProject}</p>
-          <p className="text-gray-500 text-sm">{mode}</p>
+    <div className="space-y-4">
+      <div className="bg-white rounded-lg p-4 shadow-md">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">{studentName}</h2>
+            <p className="text-sm text-gray-500">{"Sistema de Gestión Académica"}</p>
+          </div>
+          <a href={telegramLink} target="_blank" rel="noopener noreferrer">
+            <button className="flex items-center gap-2 bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded-lg text-sm">
+              <FaEnvelope />
+              {"Enviar Mensaje"}
+            </button>
+          </a>
         </div>
       </div>
 
-      <div className="flex space-x-4 my-4">
-        <a href={telegramLink} target="_blank" rel="noopener noreferrer">
-          <button className="btn flex flex-row items-center">
-            <FaEnvelope className="mr-2" /> Enviar Mensaje
-          </button>
-        </a>
-      </div>
+      <div className="bg-white rounded-lg p-4 shadow-md">
+        <h3 className="text-md font-semibold text-gray-900 mb-4 ml-2">{"Etapas de Graduación"}</h3>
 
-      <div className="border-t pt-4">
-        <div className="flex items-center justify-between text-gray-800 text-md">
-          <button>Etapas de Graduación</button>
-        </div>
-      </div>
+        <ul className="space-y-6 relative border-s border-gray-200 ml-3">
+          <li className="flex items-start gap-3 relative ms-6">
+            <span className="absolute flex items-center justify-center w-7 h-7 bg-blue-100 rounded-full -start-9 ring-8 ring-white">
+              <FaCalendar className="text-blue-800" />
+            </span>
+            <div>
+              <h4 className="text-sm font-bold text-gray-900">{"Seminario de Grado"}</h4>
+              <p className="text-sm text-gray-500">
+                {period ? `Inscripción ${period}` : "No inscrito aún"}
+              </p>
+            </div>
+            {renderStatusIcon(0)}
+          </li>
 
-      <ol className="ml-5 mt-2 relative border-s border-gray-200 dark:border-gray-700">
-        <li className="mb-10 ms-6">
-          <span className="absolute flex items-center justify-center w-7 h-7 bg-blue-100 rounded-full -start-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
-            <FaCalendarCheck className="text-blue-800" />
-          </span>
-          <h3 className="flex items-center mb-1 text-lg font-semibold text-gray-900 dark:text-white">
-            Seminario de Grado
-          </h3>
-          {process.period ? (
-            <time className="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
-              Inscripción {process.period}
-            </time>
-          ) : (
-            <span>No inscrito aun</span>
-          )}
-        </li>
-        <li className="mb-10 ms-6">
-          <span className="absolute flex items-center justify-center w-7 h-7 bg-blue-100 rounded-full -start-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
-            <FaUserTie className="text-blue-800" />
-          </span>
-          <h3 className="mb-1 text-lg font-semibold text-gray-900 dark:text-white">
-            Tutor: {process.tutor_name || " "}
-          </h3>
-          {process.tutor_approval ? (
-            <time className="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
-              Aprobación del Tutor el {}
-            </time>
-          ) : (
-            <span>Fase de Tutor no Aprobada</span>
-          )}
-        </li>
-        <li className="mb-10 ms-6">
-          <span className="absolute flex items-center justify-center w-7 h-7 bg-blue-100 rounded-full -start-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
-            <FaUserSecret className="text-blue-800" />
-          </span>
-          <h3 className="mb-1 text-lg font-semibold text-gray-900 dark:text-white">
-            Revisor: {process.reviewer_name || " "}
-          </h3>
-          {process.reviewer_approval ? (
-            <time className="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
-              Aprobación del Revisor on {}
-            </time>
-          ) : (
-            <span>Fase de Revisor no Aprobada</span>
-          )}
-        </li>
-        {/* <li className="mb-10 ms-6">
-          <span className="absolute flex items-center justify-center w-7 h-7 bg-blue-100 rounded-full -start-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
-            <FaUserShield className="text-blue-800" />
-          </span>
-          <h3 className="mb-1 text-lg font-semibold text-gray-900 dark:text-white">
-            Defensa Interna
-          </h3>
-          {internalDefenseStage.passed ? (
-            <time className="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
-              Defensa Interna on December 2nd, 2021
-            </time>
-          ) : (
-            <span className="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
-              Sin defensa Interna
+          <li className="flex items-start gap-3 relative ms-6">
+            <span className="absolute flex items-center justify-center w-7 h-7 bg-blue-100 rounded-full -start-9 ring-8 ring-white">
+              <FaUserTie className="text-blue-800" />
             </span>
-          )}
-        </li>
-        <li className="ms-6">
-          <span className="absolute flex items-center justify-center w-7 h-7 bg-blue-100 rounded-full -start-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
-            <FaUserGraduate className="text-blue-800"/>
-          </span>
-          <h3 className="mb-1 text-lg font-semibold text-gray-900 dark:text-white">
-            Defensa Externa
-          </h3>
-          {internalDefenseStage.passed ? (
-            <time className="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
-              Defensa Interna on December 2nd, 2021
-            </time>
-          ) : (
-            <span className="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
-              Sin defensa Externa
+            <div>
+              <h4 className="text-sm font-bold text-gray-900">
+                {"Tutor: "}
+                {tutorDegree} {tutorFullname}
+              </h4>
+              {tutorApproval ? (
+                <p className="text-sm text-gray-500">
+                  {"Aprobación del Tutor el "}
+                  {formattedTutorDate}
+                </p>
+              ) : (
+                <p className="text-sm text-gray-500">{"Fase de Tutor no Aprobada"}</p>
+              )}
+            </div>
+            {renderStatusIcon(1)}
+          </li>
+
+          <li className="flex items-start gap-3 relative ms-6">
+            <span className="absolute flex items-center justify-center w-7 h-7 bg-blue-100 rounded-full -start-9 ring-8 ring-white">
+              <FaUser className="text-blue-800" />
             </span>
-          )}
-        </li> */}
-      </ol>
+            <div>
+              <h4 className="text-sm font-bold text-gray-900">
+                {"Revisor: "}
+                {reviewerDegree} {reviewerFullname}
+              </h4>
+              {reviewerApproval ? (
+                <p className="text-sm text-gray-500">
+                  {"Aprobación del Revisor el "}
+                  {formattedReviewerDate}
+                </p>
+              ) : (
+                <p className="text-sm text-gray-500">{"Fase de Revisor no Aprobada"}</p>
+              )}
+            </div>
+            {renderStatusIcon(2)}
+          </li>
+        </ul>
+      </div>
     </div>
   );
 };

@@ -1,12 +1,11 @@
 import { FC } from "react";
 
-interface ModalProps{
-    isVisible: boolean;
-    setIsVisible: (isVisible: boolean) => void;
+interface ModalProps {
+  isVisible: boolean;
+  setIsVisible: (isVisible: boolean) => void;
 }
 
-export const Modal:FC<ModalProps> = ({isVisible, setIsVisible}) => {
-
+export const Modal: FC<ModalProps> = ({ isVisible, setIsVisible }) => {
   const toggleModal = () => {
     setIsVisible(!isVisible);
   };
