@@ -1,6 +1,6 @@
 import { Seminar } from '../models/studentProcess';
 import { convertSeminarToGraduationProcess, creationProcess } from '../helper/process';
-import { InitGraduationProcess } from '../services/models/GraduationProcess';
+import { InitGraduationProcess } from './models/GraduationProcess';
 import apiClient from './apiInstance';
 
 const getProcess = async () => {
@@ -41,12 +41,13 @@ const createGraduationProcess = async (seminar: InitGraduationProcess) => {
     const response = await apiClient.post(`graduation`, graduation);
     if (response.status === 201 && response.data) {
       return response.data;
-    } else {
-      throw new Error('Unexpected response from the server');
     }
-  } catch (error) {
-    console.error('Error creating graduation process:', error);
-    throw new Error('Failed to create graduation process due to an error in the request');
+    throw new Error('Unexpected response from the server');
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error creating graduation process:', error);
+    }
+    throw error;
   }
 };
 

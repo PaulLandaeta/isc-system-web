@@ -7,6 +7,7 @@ import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 import { LoadingButton } from "@mui/lab";
 import * as yup from "yup";
+import axios from "axios";
 import { Student } from "../../../models/studentInterface";
 import { getStudentsForGraduation } from "../../../services/studentService";
 import { getModes } from "../../../services/modesService";
@@ -19,6 +20,11 @@ interface ProcessFormProps {
   isClosed: () => void;
 }
 
+interface ApiErrorResponse {
+  message?: string;
+  errors?: unknown;
+}
+
 function ProcessForm({ isVisible, isClosed }: ProcessFormProps) {
   const [, setError] = useState<string | null>(null);
   const [students, setStudents] = useState<Student[]>([]);
@@ -27,7 +33,6 @@ function ProcessForm({ isVisible, isClosed }: ProcessFormProps) {
   const [titleError, setTitleError] = useState<string | null>(null);
   const updateProcess = useProcessStore((state) => state.setProcess);
   const navigate = useNavigate();
-  const actualDate = new Date();
   const numberPeriods = 3;
 
   const validationSchema = yup.object().shape({
@@ -58,8 +63,8 @@ function ProcessForm({ isVisible, isClosed }: ProcessFormProps) {
       .string()
       .min(5, "El título debe tener al menos 5 caracteres")
       .max(80, "El título no debe superar los 80 caracteres")
-      .matches(/^[a-zA-Z0-9\s]+$/, "El título solo debe contener letras y números")
-      .matches(/[a-zA-Z]/, "El título debe contener texto descriptivo.")
+      .matches(/^[A-Za-z0-9À-ÖØ-öø-ÿÑñ\s\-_]+$/, "El título contiene caracteres inválidos")
+      .matches(/[A-Za-zÀ-ÖØ-öø-ÿÑñ]/, "El título debe contener texto descriptivo")
       .matches(/^[^\s].*[^\s]$/, "El título no debe tener espacios al inicio o final")
       .matches(/^(?!.*\s{2}).*$/, "El título no debe tener espacios consecutivos")
       .required("Campo requerido"),
@@ -81,17 +86,24 @@ function ProcessForm({ isVisible, isClosed }: ProcessFormProps) {
   }, [fetchData]);
 
   const setPeriods = (option: number) => {
-    let firstSemester = actualDate.getMonth() <= 5;
-    let currentYear = actualDate.getFullYear();
-    const listPeriods = [];
+    const actualYear = new Date().getFullYear();
+    const actualMonth = new Date().getMonth();
+    const firstSemester = actualMonth <= 5;
+    const listPeriods: string[] = [];
+
+    let year = actualYear;
+    let semester = firstSemester ? 1 : 2;
+
     for (let i = 0; i < option; i += 1) {
-      const strPeriod = firstSemester ? "Primero" : "Segundo";
-      listPeriods.push(strPeriod + currentYear);
-      if (!firstSemester) {
-        currentYear += 1;
+      listPeriods.push(`${year}-${semester}`);
+      if (semester === 1) {
+        semester = 2;
+      } else {
+        semester = 1;
+        year += 1;
       }
-      firstSemester = !firstSemester;
     }
+
     return listPeriods;
   };
 
@@ -114,10 +126,28 @@ function ProcessForm({ isVisible, isClosed }: ProcessFormProps) {
           updateProcess(response.data);
           navigate(`/studentProfile/${response.data.id}`);
         }
-      } catch (error) {
-        setTitleError(
-          "Este título ya ha sido registrado por otro estudiante. Por favor, ingrese un título diferente."
-        );
+      } catch (err: unknown) {
+        if (axios.isAxiosError(err)) {
+          const status = err.response?.status;
+          const serverMessage =
+            (err.response?.data as ApiErrorResponse)?.message || "Ocurrió un error";
+
+          if (status === 409) {
+            setTitleError(serverMessage || "Ya existe un proceso con el mismo nombre");
+            formik.setFieldTouched("titleProject", true, false);
+          } else if (status === 400) {
+            if (/no es un estudiante|no existe/i.test(serverMessage)) {
+              formik.setFieldError("studentCode", serverMessage);
+              formik.setFieldTouched("studentCode", true, false);
+            } else {
+              setError(serverMessage);
+            }
+          } else {
+            setError(serverMessage);
+          }
+        } else {
+          setError("Error inesperado. Intente nuevamente.");
+        }
       } finally {
         setLoading(false);
       }
@@ -273,7 +303,8 @@ function ProcessForm({ isVisible, isClosed }: ProcessFormProps) {
                     helperText={formik.touched.period && formik.errors.period}
                   >
                     {setPeriods(numberPeriods).map((value) => {
-                      const desc = `${value.slice(0, value.length - 4)}-${value.slice(value.length - 4)}`;
+                      const [year, sem] = value.split("-");
+                      const desc = sem === "1" ? `Primero-${year}` : `Segundo-${year}`;
                       return (
                         <MenuItem key={value} value={value}>
                           {desc}
