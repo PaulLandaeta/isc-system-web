@@ -65,6 +65,15 @@ const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) => {
   const [showWarningSnackbar, setShowWarningSnackbar] = useState<boolean>(false);
   const [showDuplicateWarning, setShowDuplicateWarning] = useState<boolean>(false);
   const [originalReviewerId, setOriginalReviewerId] = useState<number | undefined>(undefined);
+  const [currentReviewerId, setCurrentReviewerId] = useState<string>(
+    process?.reviewer_id?.toString() || ""
+  );
+
+  const isDuplicateSelection = (reviewerId?: string) => {
+    const tutorId = process?.tutor_id;
+    const selectedReviewer = reviewerId || currentReviewerId;
+    return tutorId && selectedReviewer && tutorId.toString() === selectedReviewer;
+  };
 
   const isFullyApproved = () => {
     return process?.reviewer_approval && process?.stage_id > CURRENT_STAGE;
@@ -85,16 +94,6 @@ const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) => {
 
   const wasReviewerApproved = () =>
     Boolean(process?.reviewer_approval && process?.stage_id > CURRENT_STAGE);
-
-  const [currentReviewerId, setCurrentReviewerId] = useState<string>(
-    process?.reviewer_id?.toString() || ""
-  );
-
-  const isDuplicateSelection = (reviewerId?: string) => {
-    const tutorId = process?.tutor_id;
-    const selectedReviewer = reviewerId || currentReviewerId;
-    return tutorId && selectedReviewer && tutorId.toString() === selectedReviewer;
-  };
 
   const formik = useFormik({
     initialValues: {
@@ -177,8 +176,8 @@ const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) => {
     const { reviewer, reviewerDesignationLetterSubmitted, reviewerApprovalLetterSubmitted } =
       formik.values;
 
-    const currentReviewerId = Number(reviewer);
-    const reviewerChanged = originalReviewerId !== currentReviewerId;
+    const reviewerId = Number(reviewer);
+    const reviewerChanged = originalReviewerId !== reviewerId;
     const wasApproved = process.reviewer_approval;
     const shouldAdvanceToNextStage = isApproveButton && !reviewerChanged;
 
@@ -198,7 +197,7 @@ const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) => {
     }
 
     updatedProcess.reviewer_letter = reviewerDesignationLetterSubmitted;
-    updatedProcess.reviewer_id = currentReviewerId;
+    updatedProcess.reviewer_id = reviewerId;
     updatedProcess.date_reviewer_assignament = formik.values.date_reviewer_assignament;
 
     if (shouldAdvanceToNextStage) {
@@ -222,7 +221,7 @@ const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) => {
     try {
       await saveStage();
     } catch (error) {
-   
+      // Error is handled by setting process back to original state
     } finally {
       setShowModal(false);
     }
