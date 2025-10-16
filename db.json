@@ -118,5 +118,316 @@
         }
       }
     }
+  ],
+  "permissions": [
+    {
+      "subtitle": "Reportes",
+      "permissions": [
+        {
+          "action": "Ver el dashboard",
+          "permission": false
+        }
+      ]
+    },
+    {
+      "subtitle": "Proceso de graduación",
+      "permissions": [
+        {
+          "action": "Ver reporte de los procesos de graduación",
+          "permission": false
+        },
+        {
+          "action": "Crear proceso de graduación",
+          "permission": false
+        },
+        {
+          "action": "Ver proceso de graduación por estudiante",
+          "permission": false
+        },
+        {
+          "action": "Asignar proceso de graduación",
+          "permission": false
+        }
+      ]
+    },
+    {
+      "subtitle": "Docentes",
+      "permissions": [
+        {
+          "action": "Ver lista de docentes",
+          "permission": false
+        },
+        {
+          "action": "Agregar docente",
+          "permission": false
+        },
+        {
+          "action": "Ver reporte de docente",
+          "permission": false
+        },
+        {
+          "action": "Realizar una cita con docente",
+          "permission": false
+        },
+        {
+          "action": "Eliminar docente",
+          "permission": false
+        },
+        {
+          "action": "Editar información de docente",
+          "permission": false
+        }
+      ]
+    },
+    {
+      "subtitle": "Estudiantes",
+      "permissions": [
+        {
+          "action": "Ver lista de estudiantes",
+          "permission": false
+        },
+        {
+          "action": "Agregar estudiante",
+          "permission": false
+        },
+        {
+          "action": "Eliminar estudiante",
+          "permission": false
+        },
+        {
+          "action": "Editar información de estudiante",
+          "permission": false
+        },
+        {
+          "action": "Ver reporte de estudiante",
+          "permission": false
+        },
+        {
+          "action": "Realizar cita con estudiante",
+          "permission": false
+        }
+      ]
+    },
+    {
+      "subtitle": "Usuarios",
+      "permissions": [
+        {
+          "action": "Ver lista de usuarios",
+          "permission": false
+        },
+        {
+          "action": "Ver reporte de usuarios",
+          "permission": false
+        },
+        {
+          "action": "Eliminar usuario",
+          "permission": false
+        },
+        {
+          "action": "Editar informacion de usuario",
+          "permission": false
+        },
+        {
+          "action": "Agregar usuario",
+          "permission": false
+        }
+      ]
+    }
+  ],
+  "roles": [
+    {
+      "roleName": "Jefe de Carrera"
+    },
+    {
+      "roleName": "Docente"
+    },
+    {
+      "roleName": "Estudiante"
+    },
+    {
+      "roleName": "Estudiante2",
+      "id": 4
+    },
+    {
+      "roleName": "Becario",
+      "id": 5
+    },
+    {
+      "roleName": "Jefe de carrera FACED",
+      "id": 6
+    },
+    {
+      "roleName": "ayuda",
+      "id": 7
+    },
+    {
+      "roleName": "si",
+      "id": 8
+    },
+    {
+      "roleName": "ayuda",
+      "id": 9
+    },
+    {
+      "roleName": "Jefe de Carrera FIA",
+      "id": 10
+    },
+    {
+      "roleName": "Darko",
+      "id": 11
+    },
+    {
+      "roleName": "Paul",
+      "id": 12
+    },
+    {
+      "roleName": "Encargada de becas",
+      "id": 13
+    },
+    {
+      "roleName": "Egresado por excelencia",
+      "id": 14
+    },
+    {
+      "roleName": "",
+      "id": 15
+    }
+  ],
+  "users": [
+    {
+      "name": "Mildret",
+      "code": "69271",
+      "lastname": "Robles",
+      "mothername": "Gutierrez",
+      "email": "mildret@quya.com",
+      "phone": "70182881",
+      "roles": ["Becario", "student"],
+      "degree": "",
+      "id": 12347
+    },
+    {
+      "name": "Hade",
+      "code": "12347",
+      "lastname": "Villegas",
+      "mothername": "Minerva",
+      "email": "hade@hade.com",
+      "phone": "79282012",
+      "roles": ["Estudiante"],
+      "degree": "",
+      "id": 12348
+    },
+    {
+      "name": "Jhonny",
+      "code": "70416",
+      "lastname": "Cabezas",
+      "mothername": "Gomez",
+      "email": "jhony@jhony.com",
+      "phone": "78198108",
+      "roles": ["Becario", "Estudiante"],
+      "degree": "",
+      "id": 12350
+    },
+    {
+      "name": "Jose",
+      "code": "00001",
+      "lastname": "Gil",
+      "mothername": "Burgoa",
+      "email": "amor@amorcito.com",
+      "phone": "70182881",
+      "roles": ["Docente"],
+      "degree": "PhD",
+      "id": 12352
+    },
+    {
+      "name": "Suvadra",
+      "code": "59841",
+      "lastname": "Checa",
+      "mothername": "Nanda",
+      "email": "suvi@suvi.com",
+      "phone": "72983018",
+      "roles": ["Estudiante", "Docente"],
+      "degree": "",
+      "id": 12353
+    },
+    {
+      "name": "Felix",
+      "code": "25872",
+      "lastname": "Halim",
+      "mothername": "Halim",
+      "email": "halim@halim.com",
+      "phone": "77219391",
+      "roles": ["Docente"],
+      "degree": "PhD",
+      "id": 12354
+    },
+    {
+      "name": "Zein",
+      "code": "68391",
+      "lastname": "Tonconi",
+      "mothername": "Mendoza",
+      "email": "zein.tonconi@gmail.com",
+      "phone": "70186881",
+      "roles": ["Estudiante", "Becario"],
+      "degree": "",
+      "id": 12355
+    },
+    {
+      "name": "Ivan",
+      "code": "87291",
+      "lastname": "Baptista",
+      "mothername": "Baptista",
+      "email": "ivan@baptista.com",
+      "phone": "67398383",
+      "roles": ["Docente de Planta"],
+      "degree": "Ing.",
+      "id": 12356
+    },
+    {
+      "name": "Zein",
+      "code": "82910",
+      "lastname": "Tonconi",
+      "mothername": "Mendoza",
+      "email": "zein@zein.com",
+      "phone": "70186881",
+      "roles": ["Becario"],
+      "degree": "",
+      "id": 12357
+    }
+  ],
+  "professorRoles": [
+    {
+      "name": "Docente",
+      "id": 2
+    },
+    {
+      "name": "Docente de Planta",
+      "id": 3
+    },
+    {
+      "name": "Docente por materia",
+      "id": 4
+    },
+    {
+      "name": "Jefe de Carrera",
+      "id": 5
+    }
+  ],
+  "studentRoles": [
+    {
+      "name": "Estudiante",
+      "id": 2
+    },
+    {
+      "name": "Becario",
+      "id": 3
+    },
+    {
+      "name": "En proceso de Graduación",
+      "id": 4
+    },
+    {
+      "name": "Para certificaciones",
+      "id": 5
+    }
   ]
 }

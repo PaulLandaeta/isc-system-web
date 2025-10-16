@@ -1,6 +1,8 @@
 export interface Mentor {
-  id: string;
+  id: number;
   name: string;
   lastName: string;
   motherName: string;
+  fullname: string;
+  degree: string
 }

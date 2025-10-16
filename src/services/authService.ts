@@ -1,15 +1,21 @@
-import axios from "axios";
+import axios from 'axios';
+import apiClient from './apiInstance';
+import { UserResponse } from './models/LoginResponse';
 
-const API_URL = import.meta.env.VITE_API_URL + "auth/";
-
-const authenticateUser = async (email: string, password: string) => {
+const authenticateUser = async (email: string, password: string): Promise<UserResponse> => {
   try {
-    const response = await axios.post(`${API_URL}login`, { email, password });
-    return response.data;
+    const response = await apiClient.post(`auth/login`, { email, password });
+    if (response.status === 200) {
+      return response.data.data;
+    } else {
+      throw new Error('Failed to authenticate');
+    }
   } catch (error) {
-    console.error("Error al obtener los tutores:", error);
-    throw error;
+    if (axios.isAxiosError(error)) {
+      throw new Error(error.response?.data.message || 'Network error');
+    } else {
+      throw new Error('An unexpected error occurred');
+    }
   }
 };
-
 export { authenticateUser };

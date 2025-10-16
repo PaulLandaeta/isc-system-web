@@ -13,40 +13,39 @@
 }
 
 .txt {
-  @apply text-xl text-blue-950 font-semibold
+  @apply text-xl text-blue-950 font-semibold;
 }
 
 .txt1 {
-  @apply text-xl text-blue-950 font-semibold mt-14 ps-6
+  @apply text-xl text-blue-950 font-semibold mt-14 ps-6;
 }
 
 .txt2 {
-  @apply block text-lg font-medium  text-neutral-800
+  @apply block text-lg font-medium  text-neutral-800;
 }
 
-.txt-modal{
-  @apply text-xl text-blue-950 font-semibold p-5 text-center
-
+.txt-modal {
+  @apply text-xl text-blue-950 font-semibold p-5 text-center;
 }
 
 .txt2-modal {
-  @apply text-lg font-normal text-neutral-900 px-5 pb-5 text-center
+  @apply text-lg font-normal text-neutral-900 px-5 pb-5 text-center;
 }
 
 .txt3-modal {
-  @apply text-xs font-light text-neutral-500 px-5 pb-5 text-center
+  @apply text-xs font-light text-neutral-500 px-5 pb-5 text-center;
 }
 
 .checkbox {
-  @apply text-blue-2 focus:ring-blue-2 focus:border-blue-2 cursor-pointer
+  @apply text-blue-2 focus:ring-blue-2 focus:border-blue-2 cursor-pointer;
 }
 
 .select-1 {
-  @apply bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-blue-2 block w-full p-2.5 mt-2
+  @apply bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-blue-2 block w-full p-2.5 mt-2;
 }
 
 .select-2 {
-  @apply bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-blue-2  block w-full md:w-full sm:w-full p-2.5 mt-1
+  @apply bg-gray-50 border text-gray-900 text-sm rounded-lg focus:ring-blue-2  block w-full md:w-full sm:w-full p-2.5 mt-1;
 }
 
 .btn-cancel {
