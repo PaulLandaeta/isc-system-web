@@ -18,7 +18,19 @@ const useMentorFormik = (process: Seminar | null, onSubmit: () => void) => {
     mentorName: Yup.string().required("Debe seleccionar un tutor"),
     tutorDesignationLetterSubmitted: Yup.boolean(),
     tutorApprovalLetterSubmitted: Yup.boolean(),
-    date_tutor_assignament: Yup.date().required("Debe seleccionar una fecha").nullable(),
+    date_tutor_assignament: Yup.mixed()
+      .nullable()
+      .required("Debe seleccionar una fecha")
+      .test("is-valid", "Fecha no válida", (value) => {
+        if (value === null || value === undefined || value === "") {
+          return false;
+        }
+        if (dayjs.isDayjs && dayjs.isDayjs(value as unknown as Dayjs)) {
+          return (value as Dayjs).isValid();
+        }
+        const parsed = dayjs(value as unknown as string | number | Date | Dayjs | null);
+        return parsed.isValid();
+      }),
   });
 
   const formik = useFormik<MentorFormValues>({
@@ -27,7 +39,7 @@ const useMentorFormik = (process: Seminar | null, onSubmit: () => void) => {
       tutorApprovalLetterSubmitted: process?.tutor_approval || false,
       date_tutor_assignament: process?.date_tutor_assignament
         ? dayjs(process.date_tutor_assignament)
-        : dayjs(),
+        : null,
       mentor: process?.tutor_id || "",
       mentorName: process?.tutor_name || "",
     },
