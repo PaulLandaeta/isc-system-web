@@ -5,9 +5,80 @@ const route = 'roles/';
 
 export const getRoles = async () => {
   try {
-    const response = await apiClient.get(route);
-    return response.data;
+    // Obtener roles de estudiantes y profesores por separado
+    const [studentRolesResponse, professorRolesResponse, customRolesResponse] = await Promise.all([
+      apiClient.get(`${route}student`),
+      apiClient.get(`${route}professor`),
+      apiClient.get('roles'),
+    ]);
+
+    console.log('Student roles response:', studentRolesResponse.data);
+    console.log('Professor roles response:', professorRolesResponse.data);
+    console.log('Custom roles response:', customRolesResponse.data);
+
+    const studentRoles = studentRolesResponse.data.data || [];
+    const professorRoles = professorRolesResponse.data.data || [];
+    // El endpoint /roles devuelve directamente un array según db.json
+    const customRoles = Array.isArray(customRolesResponse.data) ? customRolesResponse.data : [];
+
+    // Combinar todos los roles en un objeto
+    const allRoles: Record<
+      string,
+      { id: number; disabled: boolean; permissions: { page: string[]; actions: string[] } }
+    > = {};
+
+    // Agregar roles de estudiantes
+    studentRoles.forEach((role: { id: number; name: string; disabled?: boolean }) => {
+      if (role.name) {
+        allRoles[role.name] = {
+          id: role.id,
+          disabled: role.disabled || false,
+          permissions: {
+            page: [],
+            actions: [],
+          },
+        };
+      }
+    });
+
+    // Agregar roles de profesores
+    professorRoles.forEach((role: { id: number; name: string; disabled?: boolean }) => {
+      if (role.name) {
+        allRoles[role.name] = {
+          id: role.id,
+          disabled: role.disabled || false,
+          permissions: {
+            page: [],
+            actions: [],
+          },
+        };
+      }
+    });
+
+    // Agregar roles personalizados
+    customRoles.forEach((role: { id: number; name: string; disabled?: boolean }) => {
+      if (role.name) {
+        allRoles[role.name] = {
+          id: role.id,
+          disabled: role.disabled || false,
+          permissions: {
+            page: [],
+            actions: [],
+          },
+        };
+      }
+    });
+
+    const combinedRoles = {
+      success: true,
+      data: allRoles,
+      message: 'All roles retrieved successfully',
+    };
+
+    console.log('Combined roles:', combinedRoles);
+    return combinedRoles;
   } catch (error) {
+    console.error('Error getting roles:', error);
     throw new Error(`Failed to get roles: ${(error as Error).message}`);
   }
 };
@@ -32,10 +103,19 @@ export const getStudentRoles = async () => {
 
 export const addRole = async (role: { name: string; category: string }) => {
   try {
-    const response = await apiClient.post(route, role);
-    return response.data;
-  } catch (error) {
-    throw new Error(`Failed to add role: ${(error as Error).message}`);
+    console.log('Sending role data:', role);
+
+    // Crear el rol en la tabla de roles personalizados
+    const customRoleResponse = await apiClient.post('roles', {
+      roleName: role.name,
+    });
+    console.log('Custom role response:', customRoleResponse.data);
+
+    return customRoleResponse.data;
+  } catch (error: unknown) {
+    console.error('API error details:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    throw new Error(`Failed to add role: ${errorMessage}`);
   }
 };
 

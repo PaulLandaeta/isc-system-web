@@ -13,9 +13,9 @@ import {
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import SearchIcon from "@mui/icons-material/Search";
 
+import { ChangeEvent, FC, useCallback, useEffect, useState } from "react";
 import RoleComponent from "./RoleComponent";
 import { RoleTableProps } from "../../models/roleTablePropsInterface";
-import { ChangeEvent, FC, useEffect, useState } from "react";
 import Role from "../../models/roleInterface";
 import { deleteRole, editRole } from "../../services/roleService";
 import AlertSnackbar from "../common/AlertSnackbar";
@@ -32,6 +32,7 @@ const RoleTable: FC<RoleTableProps> = ({
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const handleRoleClick = (roleName: string) => {
+    console.log("Role clicked:", roleName);
     onRoleSelect(roleName);
   };
 
@@ -47,6 +48,11 @@ const RoleTable: FC<RoleTableProps> = ({
       setSnackbarMessage("El rol falló al ser eliminado");
     }
   };
+
+  useEffect(() => {
+    console.log("Roles received in RoleTable:", roles);
+    setFilteredRoles(roles);
+  }, [roles]);
 
   const handleRoleEdit = async (id: number, role: { name: string }) => {
     try {
@@ -64,25 +70,32 @@ const RoleTable: FC<RoleTableProps> = ({
     }
   };
 
-  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-    filterRoles(search);
-  };
+  const filterRoles = useCallback(
+    (searchValue: string) => {
+      if (searchValue.trim() === "") {
+        setFilteredRoles(roles);
+      } else {
+        const filtered = roles.filter((role: Role) =>
+          role.name.toLowerCase().includes(searchValue.toLowerCase())
+        );
+        setFilteredRoles(filtered);
+      }
+    },
+    [roles]
+  );
 
-  const handleCloseSnackbar = () => {
+  const handleSearch = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const { value } = e.target;
+      setSearch(value);
+      filterRoles(value);
+    },
+    [filterRoles]
+  );
+
+  const handleCloseSnackbar = useCallback(() => {
     setOpenSnackbar(false);
-  };
-
-  const filterRoles = (searchValue: string) => {
-    if (searchValue.trim() === "") {
-      setFilteredRoles(roles);
-    } else {
-      const filtered = roles.filter((role: Role) =>
-        role.name.toLowerCase().includes(searchValue.toLowerCase())
-      );
-      setFilteredRoles(filtered);
-    }
-  };
+  }, []);
 
   useEffect(() => {
     filterRoles(search);
@@ -97,7 +110,7 @@ const RoleTable: FC<RoleTableProps> = ({
               <div
                 style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}
               >
-                <Typography variant="h6">Roles</Typography>
+                <Typography variant="h6">{"Roles"}</Typography>
                 <IconButton aria-label="add" onClick={() => setIsModalVisible(true)}>
                   <PersonAddAlt1Icon fontSize="medium" style={{ color: "white" }} />
                 </IconButton>
