@@ -8,6 +8,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import StageTitle from "./StageTitle";
+import StageContainer from "./StageContainer";
 
 import ConfirmModal from "../common/ConfirmModal";
 import steps from "../../data/steps";
@@ -92,7 +94,7 @@ const InternalDefenseStage: FC<InternalDefenseStageProps> = ({ onPrevious, onNex
       const [year, month, day, hour, minute] = values.date
         .format("YYYY-MM-DD HH:mm")
         .split(/[- :]/);
-      const response = await getProfessorById(parseInt(values.president));
+      const response = await getProfessorById(parseInt(values.president, 10));
       const fullName = response.fullname;
       const student = process?.student_fullname || "";
       const tutor = `${process?.tutor_degree || ""} ${process?.tutor_fullname}`;
@@ -118,7 +120,7 @@ const InternalDefenseStage: FC<InternalDefenseStageProps> = ({ onPrevious, onNex
 
       downloadFile(pdfBlob, "Acta_Defensa_Interna_de_Seminario_de_Grado_V1.1.pdf");
     } catch (error) {
-      console.error("Failed to download PDF:", error);
+      // Error handling for PDF download
     }
   };
 
@@ -189,10 +191,11 @@ const InternalDefenseStage: FC<InternalDefenseStageProps> = ({ onPrevious, onNex
 
   return (
     <>
-      <Typography variant="h6" gutterBottom style={{ fontWeight: "bold" }}>
-        {"Etapa 4: Defensa Interna"}{" "}
-        {subStage === 1 && <ModeEditIcon onClick={editForm} style={{ cursor: "pointer" }} />}
-      </Typography>
+      <StageTitle 
+        title="Etapa 4: Defensa Interna" 
+        onEdit={subStage === 1 ? editForm : undefined}
+        disabled={false}
+      />
       {subStage === 0 && (
         <>
           <EmailSender id={0} onClose={() => {}} />
@@ -207,81 +210,83 @@ const InternalDefenseStage: FC<InternalDefenseStageProps> = ({ onPrevious, onNex
         </>
       )}
       {subStage === 1 && (
-        <form onSubmit={formik.handleSubmit} className="mx-16">
-          <Box>
-            <Grid container spacing={2}>
-              <Grid item xs={6} marginTop={5}>
-                <ProfessorAutocomplete
-                  disabled={readOnly}
-                  value={String(formik.values.president)}
-                  onChange={handlePresidentChange}
-                  id="president"
-                  label="Seleccionar Presidente"
-                />
-                {formik.touched.president && formik.errors.president ? (
-                  <div className="text-red-1 text-xs mt-1">{String(formik.errors.president)}</div>
-                ) : null}
-              </Grid>
-
-              <Grid item xs={6} marginTop={5}>
-                <ProfessorAutocomplete
-                  disabled={readOnly}
-                  value={String(formik.values.firstJuror)}
-                  onChange={handleFirstJurorChange}
-                  id="firstJuror"
-                  label="Seleccionar Primer Jurado"
-                />
-                {formik.touched.firstJuror && formik.errors.firstJuror ? (
-                  <div className="text-red-1 text-xs mt-1">{String(formik.errors.firstJuror)}</div>
-                ) : null}
-              </Grid>
-
-              <Grid item xs={6} marginTop={5}>
-                <ProfessorAutocomplete
-                  disabled={readOnly}
-                  value={String(formik.values.secondJuror)}
-                  onChange={handleSecondJurorChange}
-                  id="secondJuror"
-                  label="Seleccionar Segundo Jurado"
-                />
-                {formik.touched.secondJuror && formik.errors.secondJuror ? (
-                  <div className="text-red-1 text-xs mt-1">{String(formik.errors.secondJuror)}</div>
-                ) : null}
-              </Grid>
-
-              <Grid item xs={12} sm={6} marginTop={5}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
+        <StageContainer>
+          <form onSubmit={formik.handleSubmit}>
+            <Box>
+              <Grid container spacing={2}>
+                <Grid item xs={6} marginTop={5}>
+                  <ProfessorAutocomplete
                     disabled={readOnly}
-                    label="Fecha de Defensa"
-                    value={formik.values.date}
-                    onChange={handleDateChange}
-                    format="DD/MM/YYYY"
-                    minDate={currentDate}
-                    maxDate={currentDate.add(1, "year")}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        onBlur: () => formik.setFieldTouched("date", true),
-                        error: formik.touched.date && Boolean(formik.errors.date),
-                        helperText: formik.touched.date && formik.errors.date,
-                      },
-                    }}
+                    value={String(formik.values.president)}
+                    onChange={handlePresidentChange}
+                    id="president"
+                    label="Seleccionar Presidente"
                   />
-                </LocalizationProvider>
-              </Grid>
-            </Grid>
-          </Box>
+                  {formik.touched.president && formik.errors.president ? (
+                    <div className="text-red-1 text-xs mt-1">{String(formik.errors.president)}</div>
+                  ) : null}
+                </Grid>
 
-          <Box display="flex" justifyContent="space-between" pt={5}>
-            <Button type="button" onClick={prevSubStage} variant="contained" color="secondary">
-              {"Anterior"}
-            </Button>
-            <Button type="submit" variant="contained" color="primary">
-              {isApproveButton ? "Aprobar Etapa" : "Guardar"}
-            </Button>
-          </Box>
-        </form>
+                <Grid item xs={6} marginTop={5}>
+                  <ProfessorAutocomplete
+                    disabled={readOnly}
+                    value={String(formik.values.firstJuror)}
+                    onChange={handleFirstJurorChange}
+                    id="firstJuror"
+                    label="Seleccionar Primer Jurado"
+                  />
+                  {formik.touched.firstJuror && formik.errors.firstJuror ? (
+                    <div className="text-red-1 text-xs mt-1">{String(formik.errors.firstJuror)}</div>
+                  ) : null}
+                </Grid>
+
+                <Grid item xs={6} marginTop={5}>
+                  <ProfessorAutocomplete
+                    disabled={readOnly}
+                    value={String(formik.values.secondJuror)}
+                    onChange={handleSecondJurorChange}
+                    id="secondJuror"
+                    label="Seleccionar Segundo Jurado"
+                  />
+                  {formik.touched.secondJuror && formik.errors.secondJuror ? (
+                    <div className="text-red-1 text-xs mt-1">{String(formik.errors.secondJuror)}</div>
+                  ) : null}
+                </Grid>
+
+                <Grid item xs={12} sm={6} marginTop={5}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DatePicker
+                      disabled={readOnly}
+                      label="Fecha de Defensa"
+                      value={formik.values.date}
+                      onChange={handleDateChange}
+                      format="DD/MM/YYYY"
+                      minDate={currentDate}
+                      maxDate={currentDate.add(1, "year")}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          onBlur: () => formik.setFieldTouched("date", true),
+                          error: formik.touched.date && Boolean(formik.errors.date),
+                          helperText: formik.touched.date && formik.errors.date,
+                        },
+                      }}
+                    />
+                  </LocalizationProvider>
+                </Grid>
+              </Grid>
+            </Box>
+
+            <Box display="flex" justifyContent="space-between" pt={5}>
+              <Button type="button" onClick={prevSubStage} variant="contained" color="secondary">
+                {"Anterior"}
+              </Button>
+              <Button type="submit" variant="contained" color="primary">
+                {isApproveButton ? "Aprobar Etapa" : "Guardar"}
+              </Button>
+            </Box>
+          </form>
+        </StageContainer>
       )}
       {showModal && (
         <ConfirmModal
