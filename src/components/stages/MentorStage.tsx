@@ -1,9 +1,10 @@
 import { FC, useCallback, useState } from "react";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
-import { Box, Button, Typography, Grid, Alert, AlertTitle, Snackbar } from "@mui/material";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import { Box, Button, Grid, Alert, AlertTitle, Snackbar, Typography } from "@mui/material";
 import WarningIcon from "@mui/icons-material/Warning";
+import StageTitle from "./StageTitle";
+import StageContainer from "./StageContainer";
 
 import MentorSelection from "./MentorSelection";
 import DateSelection from "./DateSelection";
@@ -24,7 +25,7 @@ interface InternalDefenseStageProps {
   onNext: () => void;
 }
 
-export const MentorStage: FC<InternalDefenseStageProps> = ({ onPrevious, onNext }) => {
+const MentorStage: FC<InternalDefenseStageProps> = ({ onPrevious, onNext }) => {
   const process = useProcessStore((state) => state.process);
   const carrer = useCarrerStore((state) => state.carrer);
   const setProcess = useProcessStore((state) => state.setProcess);
@@ -110,16 +111,11 @@ export const MentorStage: FC<InternalDefenseStageProps> = ({ onPrevious, onNext 
 
   return (
     <>
-      <Typography variant="h6" gutterBottom style={{ fontWeight: "bold" }}>
-        Etapa 2: Seleccionar Tutor
-        <ModeEditIcon
-          onClick={editForm}
-          style={{
-            cursor: isBlocked ? "not-allowed" : "pointer",
-            color: isBlocked ? "#ccc" : "inherit",
-          }}
-        />
-      </Typography>
+      <StageTitle 
+        title="Etapa 2: Seleccionar Tutor" 
+        onEdit={editForm}
+        disabled={isBlocked}
+      />
 
       {isBlocked && (
         <Alert severity="warning" sx={{ mb: 2 }} icon={<WarningIcon />}>
@@ -129,26 +125,28 @@ export const MentorStage: FC<InternalDefenseStageProps> = ({ onPrevious, onNext 
         </Alert>
       )}
 
-      <form onSubmit={formik.handleSubmit} className="mx-16">
-        <Grid container spacing={3}>
-          <MentorSelection
-            disabled={editMode}
-            formik={formik}
-            process={process}
-            renderFieldError={renderFieldError}
-          />
-          <DateSelection disabled={editMode} formik={formik} renderFieldError={renderFieldError} />
-        </Grid>
-        <DocumentCheckbox disabled={editMode} formik={formik} carrer={carrer} process={process} />
-        <Box display="flex" justifyContent="space-between" mt={4}>
-          <Button type="button" onClick={onPrevious} variant="contained" color="secondary">
-            Anterior
-          </Button>
-          <Button type="submit" variant="contained" color="primary" disabled={isBlocked}>
-            {canApproveStage ? "Aprobar Etapa" : "Guardar"}
-          </Button>
-        </Box>
-      </form>
+      <StageContainer>
+        <form onSubmit={formik.handleSubmit}>
+          <Grid container spacing={3}>
+            <MentorSelection
+              disabled={editMode}
+              formik={formik}
+              process={process}
+              renderFieldError={renderFieldError}
+            />
+            <DateSelection disabled={editMode} formik={formik} renderFieldError={renderFieldError} />
+          </Grid>
+          <DocumentCheckbox disabled={editMode} formik={formik} carrer={carrer} process={process} />
+          <Box display="flex" justifyContent="space-between" mt={4}>
+            <Button type="button" onClick={onPrevious} variant="contained" color="secondary">
+              Anterior
+            </Button>
+            <Button type="submit" variant="contained" color="primary" disabled={isBlocked}>
+              {canApproveStage ? "Aprobar Etapa" : "Guardar"}
+            </Button>
+          </Box>
+        </form>
+      </StageContainer>
       {showModal && (
         <ConfirmModal
           step={steps[1]}
@@ -173,3 +171,5 @@ export const MentorStage: FC<InternalDefenseStageProps> = ({ onPrevious, onNext 
     </>
   );
 };
+
+export default MentorStage;

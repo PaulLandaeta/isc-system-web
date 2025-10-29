@@ -17,9 +17,10 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs, { Dayjs } from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import WarningIcon from "@mui/icons-material/Warning";
 import ErrorIcon from "@mui/icons-material/Error";
+import StageTitle from "./StageTitle";
+import StageContainer from "./StageContainer";
 import ConfirmModal from "../common/ConfirmModal";
 import steps from "../../data/steps";
 import { useProcessStore } from "../../store/store";
@@ -31,7 +32,7 @@ import letters from "../../constants/letters";
 import { useCarrerStore } from "../../store/carrerStore";
 
 const parseEnvNumber = (v: unknown, d: number) => {
-  const n = Number(v as any);
+  const n = Number(v as unknown);
   return Number.isFinite(n) ? n : d;
 };
 
@@ -50,7 +51,7 @@ const validationSchema = Yup.object({
     .test(
       "different-from-tutor",
       "* El revisor no puede ser el mismo docente que el tutor",
-      function (value) {
+      function checkDifferentFromTutor(value) {
         const { parent } = this;
         const { tutorId } = parent as { tutorId?: number | string };
         return !value || !tutorId || value !== tutorId.toString();
@@ -139,7 +140,6 @@ const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) => {
       if (canApproveStage()) {
         setShowModal(true);
       } else {
-        saveStage(false);
       }
     },
   });
@@ -169,6 +169,7 @@ const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) => {
         formik.values.date_reviewer_assignament &&
         !isDuplicateSelection(formik.values.reviewer)
     );
+
   const isApproveButton = canApproveStage();
   const hasReviewer = Boolean(formik.values.reviewer);
 
@@ -208,7 +209,6 @@ const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) => {
         onNext();
       }
     } catch (error) {
-      console.error("Error saving stage:", error);
       setErrorMessage("Error al guardar los datos. Por favor, intente nuevamente.");
       setShowErrorSnackbar(true);
     } finally {
@@ -258,16 +258,11 @@ const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) => {
 
   return (
     <>
-      <div className="txt1 pb-3">
-        {"Etapa 3: Seleccionar Revisor "}
-        <ModeEditIcon
-          onClick={editForm}
-          style={{
-            cursor: wasReviewerApproved() ? "not-allowed" : "pointer",
-            color: wasReviewerApproved() ? "#ccc" : "inherit",
-          }}
-        />
-      </div>
+      <StageTitle 
+        title="Etapa 3: Seleccionar Revisor" 
+        onEdit={editForm}
+        disabled={wasReviewerApproved()}
+      />
 
       {wasReviewerApproved() && (
         <Alert severity="warning" sx={{ mb: 2 }} icon={<WarningIcon />}>
@@ -309,151 +304,157 @@ const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) => {
         </Alert>
       )}
 
-      <form onSubmit={formik.handleSubmit} className="mt-5 mx-16">
-        <Grid container spacing={3}>
-          <Grid item xs={6}>
-            <ProfessorAutocomplete
-              disabled={editMode}
-              value={formik.values.reviewer}
-              onChange={handleMentorChange}
-              id="reviewer"
-              label="Seleccionar Revisor"
-            />
-            {formik.touched.reviewer && formik.errors.reviewer ? (
-              <div className="text-red-1 text-xs mt-1">{formik.errors.reviewer}</div>
-            ) : null}
-          </Grid>
-          <Grid item xs={6}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
+      <StageContainer>
+        <form onSubmit={formik.handleSubmit}>
+          <Grid container spacing={3}>
+            <Grid item xs={6}>
+              <ProfessorAutocomplete
                 disabled={editMode}
-                label="Fecha de Asignación"
-                value={formik.values.date_reviewer_assignament}
-                onChange={handleDateChange}
-                format="DD/MM/YYYY"
-                minDate={MIN_DATE}
-                maxDate={MAX_DATE}
+                value={formik.values.reviewer}
+                onChange={handleMentorChange}
+                id="reviewer"
+                label="Seleccionar Revisor"
               />
-            </LocalizationProvider>
+              {formik.touched.reviewer && formik.errors.reviewer ? (
+                <div className="text-red-1 text-xs mt-1">{formik.errors.reviewer}</div>
+              ) : null}
+            </Grid>
+            <Grid item xs={6}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  disabled={editMode}
+                  label="Fecha de Asignación"
+                  value={formik.values.date_reviewer_assignament}
+                  onChange={handleDateChange}
+                  format="DD/MM/YYYY"
+                  minDate={MIN_DATE}
+                  maxDate={MAX_DATE}
+                />
+              </LocalizationProvider>
+            </Grid>
           </Grid>
-        </Grid>
 
-        <Paper
-          elevation={0}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            backgroundColor: "#e6f4ff",
-            p: 2,
-            borderRadius: 2,
-            mt: 2,
-          }}
-        >
-          <Checkbox
-            name="reviewerDesignationLetterSubmitted"
-            color="primary"
-            checked={formik.values.reviewerDesignationLetterSubmitted}
-            onChange={formik.handleChange}
-            disabled={editMode}
-          />
-          <Typography variant="body2" sx={{ flexGrow: 1 }}>
-            {"Carta de Designación de Revisor Presentada\r"}
-          </Typography>
-          <Tooltip
-            title={!hasReviewer ? "Debe seleccionar un revisor para habilitar esta descarga" : ""}
+          <Paper
+            elevation={0}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              backgroundColor: "#e6f4ff",
+              p: 2,
+              borderRadius: 2,
+              mt: 2,
+            }}
           >
-            <span>
-              <DownloadButton
-                disabled={!hasReviewer}
-                url={REVIEWER_ASSIGNMENT.path}
-                data={{
-                  student: process?.student_fullname || "",
-                  number: 1,
-                  reviewer: process?.reviewer_fullname || "",
-                  degree: process?.reviewer_degree || "",
-                  jefe_carrera: carrer?.headOfDepartment || "",
-                  carrera: carrer?.fullName || "",
-                  project_title: process?.project_name || "",
-                  carrer_abre: carrer?.shortName || "",
-                  day: dayjs().format("DD"),
-                  month: dayjs().format("MMMM"),
-                  year: dayjs().format("YYYY"),
-                }}
-                filename={`${REVIEWER_ASSIGNMENT.filename}_${process?.reviewer_fullname || ""}.${REVIEWER_ASSIGNMENT.extention}`}
-              />
-            </span>
-          </Tooltip>
-        </Paper>
+            <Checkbox
+              name="reviewerDesignationLetterSubmitted"
+              color="primary"
+              checked={formik.values.reviewerDesignationLetterSubmitted}
+              onChange={formik.handleChange}
+              disabled={editMode}
+            />
+            <Typography variant="body2" sx={{ flexGrow: 1 }}>
+              {"Carta de Designación de Revisor Presentada\r"}
+            </Typography>
+            <Tooltip
+              title={!hasReviewer ? "Debe seleccionar un revisor para habilitar esta descarga" : ""}
+            >
+              <span>
+                <DownloadButton
+                  disabled={!hasReviewer}
+                  url={REVIEWER_ASSIGNMENT.path}
+                  data={{
+                    student: process?.student_fullname || "",
+                    number: 1,
+                    reviewer: process?.reviewer_fullname || "",
+                    degree: process?.reviewer_degree || "",
+                    jefe_carrera: carrer?.headOfDepartment || "",
+                    carrera: carrer?.fullName || "",
+                    project_title: process?.project_name || "",
+                    carrer_abre: carrer?.shortName || "",
+                    day: dayjs().format("DD"),
+                    month: dayjs().format("MMMM"),
+                    year: dayjs().format("YYYY"),
+                  }}
+                  filename={`${REVIEWER_ASSIGNMENT.filename}_${process?.reviewer_fullname || ""}.${REVIEWER_ASSIGNMENT.extention}`}
+                />
+              </span>
+            </Tooltip>
+          </Paper>
 
-        <Paper
-          elevation={0}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            backgroundColor: "#e6f4ff",
-            p: 2,
-            borderRadius: 2,
-            mt: 2,
-          }}
-        >
-          <Checkbox
-            name="reviewerApprovalLetterSubmitted"
-            color="primary"
-            checked={formik.values.reviewerApprovalLetterSubmitted}
-            onChange={formik.handleChange}
-            disabled={editMode}
-          />
-          <Typography variant="body2" sx={{ flexGrow: 1 }}>
-            {"Carta de Aprobación de Revisor Presentada\r"}
-          </Typography>
-          <Tooltip
-            title={!hasReviewer ? "Debe seleccionar un revisor para habilitar esta descarga" : ""}
+          <Paper
+            elevation={0}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              backgroundColor: "#e6f4ff",
+              p: 2,
+              borderRadius: 2,
+              mt: 2,
+            }}
           >
-            <span>
-              <DownloadButton
-                disabled={!hasReviewer}
-                url={TUTOR_APPROBAL.path}
-                data={{
-                  student: process?.student_fullname || "",
-                  tutor: process?.reviewer_fullname || "",
-                  jefe_carrera: carrer?.headOfDepartment || "",
-                  degree: process?.reviewer_degree || "",
-                  carrera: carrer?.fullName || "",
-                  dia: dayjs().format("DD"),
-                  mes: dayjs().format("MMMM"),
-                  ano: dayjs().format("YYYY"),
-                  title_project: process?.project_name || "",
-                  date: dayjs(formik.values.date_reviewer_assignament).format("DD/MM/YYYY"),
-                  isTesis: process?.modality_id.toString() === "3" ? "  X" : "",
-                  isProject: process?.modality_id.toString() === "1" ? "  X" : "",
-                  isJob: process?.modality_id.toString() === "2" ? "  X" : "",
-                }}
-                filename={`${TUTOR_APPROBAL.filename}_${process?.reviewer_fullname || formik.values.reviewer}.${TUTOR_APPROBAL.extention}`}
-              />
-            </span>
-          </Tooltip>
-        </Paper>
+            <Checkbox
+              name="reviewerApprovalLetterSubmitted"
+              color="primary"
+              checked={formik.values.reviewerApprovalLetterSubmitted}
+              onChange={formik.handleChange}
+              disabled={editMode}
+            />
+            <Typography variant="body2" sx={{ flexGrow: 1 }}>
+              {"Carta de Aprobación de Revisor Presentada\r"}
+            </Typography>
+            <Tooltip
+              title={!hasReviewer ? "Debe seleccionar un revisor para habilitar esta descarga" : ""}
+            >
+              <span>
+                <DownloadButton
+                  disabled={!hasReviewer}
+                  url={TUTOR_APPROBAL.path}
+                  data={{
+                    student: process?.student_fullname || "",
+                    tutor: process?.reviewer_fullname || "",
+                    jefe_carrera: carrer?.headOfDepartment || "",
+                    degree: process?.reviewer_degree || "",
+                    carrera: carrer?.fullName || "",
+                    dia: dayjs().format("DD"),
+                    mes: dayjs().format("MMMM"),
+                    ano: dayjs().format("YYYY"),
+                    title_project: process?.project_name || "",
+                    date: dayjs(formik.values.date_reviewer_assignament).format("DD/MM/YYYY"),
+                    isTesis: process?.modality_id.toString() === "3" ? "  X" : "",
+                    isProject: process?.modality_id.toString() === "1" ? "  X" : "",
+                    isJob: process?.modality_id.toString() === "2" ? "  X" : "",
+                  }}
+                  filename={`${TUTOR_APPROBAL.filename}_${process?.reviewer_fullname || formik.values.reviewer}.${TUTOR_APPROBAL.extention}`}
+                />
+              </span>
+            </Tooltip>
+          </Paper>
 
-        <Box display="flex" justifyContent="space-between" mt={4}>
-          <Button type="button" variant="contained" color="secondary" onClick={onPrevious}>
-            {"Anterior\r"}
-          </Button>
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            disabled={
-              editMode ||
-              !formik.values.reviewerDesignationLetterSubmitted ||
-              !formik.values.reviewerApprovalLetterSubmitted ||
-              Boolean(isDuplicateSelection(formik.values.reviewer)) ||
-              isSaving
-            }
-          >
-            {isSaving ? "Guardando..." : isApproveButton ? "Aprobar Etapa" : "Guardar"}
-          </Button>
-        </Box>
-      </form>
+          <Box display="flex" justifyContent="space-between" mt={4}>
+            <Button type="button" variant="contained" color="secondary" onClick={onPrevious}>
+              {"Anterior\r"}
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={
+                editMode ||
+                !formik.values.reviewerDesignationLetterSubmitted ||
+                !formik.values.reviewerApprovalLetterSubmitted ||
+                Boolean(isDuplicateSelection(formik.values.reviewer)) ||
+                isSaving
+              }
+            >
+              {(() => {
+                if (isSaving) return "Guardando...";
+                if (isApproveButton) return "Aprobar Etapa";
+                return "Guardar";
+              })()}
+            </Button>
+          </Box>
+        </form>
+      </StageContainer>
 
       {showModal && (
         <ConfirmModal

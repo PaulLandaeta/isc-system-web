@@ -1,10 +1,8 @@
 import { FC, useEffect, useState, useCallback } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import WarningIcon from "@mui/icons-material/Warning";
 import {
-  Typography,
   Alert,
   AlertTitle,
   SelectChangeEvent,
@@ -20,6 +18,8 @@ import {
   Grid,
   Snackbar,
 } from "@mui/material";
+import StageTitle from "./StageTitle";
+import StageContainer from "./StageContainer";
 import Modes from "../../models/modeInterface";
 import getModes from "../../services/modesService";
 import { Modal } from "../common/Modal";
@@ -58,7 +58,7 @@ const getValueFromId = (id: number) => {
   return foundPeriod ? foundPeriod.value : "";
 };
 
-export const RegistrationStage: FC<RegistrationStageProps> = ({ onNext }) => {
+const RegistrationStage: FC<RegistrationStageProps> = ({ onNext }) => {
   const studentProcess = useProcessStore((state) => state.process);
   const setProcess = useProcessStore((state) => state.setProcess);
   const [modes, setModes] = useState<Modes[]>([]);
@@ -85,7 +85,6 @@ export const RegistrationStage: FC<RegistrationStageProps> = ({ onNext }) => {
     return isApproved || isLaterStage;
   }, [studentProcess]);
 
-  // Actualizar el estado de solo lectura cuando cambie el proceso
   useEffect(() => {
     setReadOnly(checkSeminarApproved());
   }, [checkSeminarApproved]);
@@ -109,21 +108,17 @@ export const RegistrationStage: FC<RegistrationStageProps> = ({ onNext }) => {
         return;
       }
 
-      // Volver a verificar el estado de aprobación antes de guardar
       if (checkSeminarApproved()) {
         return;
       }
 
       try {
-        // Primero crear una copia del proceso para no mutar el estado directamente
         const updatedProcess = { ...studentProcess };
         updatedProcess.modality_id = mode;
         updatedProcess.period = period;
 
-        // Intentar actualizar en el backend primero
         await updateProcess(updatedProcess);
 
-        // Si la actualización fue exitosa, actualizar el estado local
         setProcess(updatedProcess);
         onNext();
       } catch (error) {
@@ -145,7 +140,6 @@ export const RegistrationStage: FC<RegistrationStageProps> = ({ onNext }) => {
       })
     ),
     onSubmit: () => {
-      // No permitir envío del formulario si está en modo solo lectura
       if (readOnly) {
         return;
       }
@@ -209,24 +203,11 @@ export const RegistrationStage: FC<RegistrationStageProps> = ({ onNext }) => {
 
   return (
     <>
-      <Typography variant="h6" gutterBottom sx={{ fontWeight: "bold" }}>
-        {"Etapa 1: Seminario de Grado"}{" "}
-        <ModeEditIcon
-          role="button"
-          tabIndex={0}
-          aria-label={readOnly ? "Edición deshabilitada" : "Editar seminario"}
-          onClick={handleEditIconClick}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              handleEditIconClick();
-            }
-          }}
-          sx={{
-            cursor: readOnly ? "not-allowed" : "pointer",
-            opacity: readOnly ? 0.5 : 1,
-          }}
-        />
-      </Typography>
+      <StageTitle 
+        title="Etapa 1: Seminario de Grado" 
+        onEdit={handleEditIconClick}
+        disabled={readOnly}
+      />
 
       {readOnly && (
         <Alert severity="warning" sx={{ mb: 2 }} icon={<WarningIcon />}>
@@ -239,60 +220,62 @@ export const RegistrationStage: FC<RegistrationStageProps> = ({ onNext }) => {
         </Alert>
       )}
 
-      <form onSubmit={formik.handleSubmit} className="mt-5 mx-16">
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={12} md={7} lg={8}>
-            <FormControl component="fieldset">
-              <FormLabel component="legend">{"1. Seleccione la Modalidad"}</FormLabel>
-              <RadioGroup
-                aria-label="mode"
-                name="mode"
-                row
-                value={formik.values.mode}
-                onChange={handleRadioChange}
-              >
-                {modes.map((option) => (
-                  <FormControlLabel
-                    key={option.id}
-                    value={option.id}
-                    control={<Radio disabled={readOnly} />}
-                    label={option.name}
-                  />
-                ))}
-              </RadioGroup>
-            </FormControl>
+      <StageContainer>
+        <form onSubmit={formik.handleSubmit}>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={12} md={7} lg={8}>
+              <FormControl component="fieldset">
+                <FormLabel component="legend">{"1. Seleccione la Modalidad"}</FormLabel>
+                <RadioGroup
+                  aria-label="mode"
+                  name="mode"
+                  row
+                  value={formik.values.mode}
+                  onChange={handleRadioChange}
+                >
+                  {modes.map((option) => (
+                    <FormControlLabel
+                      key={option.id}
+                      value={option.id}
+                      control={<Radio disabled={readOnly} />}
+                      label={option.name}
+                    />
+                  ))}
+                </RadioGroup>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={12} md={7} lg={8}>
+              <FormControl fullWidth variant="outlined" margin="normal">
+                <InputLabel id="period-label">{"2. Seleccione periodo de inscripción"}</InputLabel>
+                <Select
+                  labelId="period-label"
+                  id="period"
+                  name="period"
+                  value={formik.values.period}
+                  onChange={handleSelectChange}
+                  label="2. Seleccione periodo de inscripción"
+                  disabled={readOnly}
+                  error={formik.touched.period && Boolean(formik.errors.period)}
+                >
+                  {periods.map((option) => (
+                    <MenuItem key={option.id} value={option.id}>
+                      {option.value}
+                    </MenuItem>
+                  ))}
+                </Select>
+                {formik.touched.period && formik.errors.period && (
+                  <div className="text-red-1 text-xs font-medium mt-1">{formik.errors.period}</div>
+                )}
+              </FormControl>
+            </Grid>
           </Grid>
-          <Grid item xs={12} sm={12} md={7} lg={8}>
-            <FormControl fullWidth variant="outlined" margin="normal">
-              <InputLabel id="period-label">{"2. Seleccione periodo de inscripción"}</InputLabel>
-              <Select
-                labelId="period-label"
-                id="period"
-                name="period"
-                value={formik.values.period}
-                onChange={handleSelectChange}
-                label="2. Seleccione periodo de inscripción"
-                disabled={readOnly}
-                error={formik.touched.period && Boolean(formik.errors.period)}
-              >
-                {periods.map((option) => (
-                  <MenuItem key={option.id} value={option.id}>
-                    {option.value}
-                  </MenuItem>
-                ))}
-              </Select>
-              {formik.touched.period && formik.errors.period && (
-                <div className="text-red-1 text-xs font-medium mt-1">{formik.errors.period}</div>
-              )}
-            </FormControl>
-          </Grid>
-        </Grid>
-        <div className="flex justify-end pt-5">
-          <Button type="submit" variant="contained" color="primary" disabled={readOnly && edited}>
-            {"Siguiente"}
-          </Button>
-        </div>
-      </form>
+          <div className="flex justify-end pt-5">
+            <Button type="submit" variant="contained" color="primary" disabled={readOnly && edited}>
+              {"Siguiente"}
+            </Button>
+          </div>
+        </form>
+      </StageContainer>
       {showModal && (
         <ConfirmModal
           step={steps[0]}
@@ -319,3 +302,5 @@ export const RegistrationStage: FC<RegistrationStageProps> = ({ onNext }) => {
     </>
   );
 };
+
+export default RegistrationStage;

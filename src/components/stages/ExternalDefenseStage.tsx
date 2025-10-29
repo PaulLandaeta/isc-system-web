@@ -7,6 +7,8 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs, { Dayjs } from "dayjs";
 import { useNavigate } from "react-router-dom";
+import StageTitle from "./StageTitle";
+import StageContainer from "./StageContainer";
 import steps from "../../data/steps";
 import ConfirmModal from "../common/ConfirmModal";
 import { useProcessStore } from "../../store/store";
@@ -100,10 +102,8 @@ const ExternalDefenseStage: FC<ExternalDefenseStageProps> = ({ onPrevious }) => 
       await saveStage(formik.values);
       setShowModal(false);
 
-      // Mostrar notificación de éxito
       setShowSuccessSnackbar(true);
 
-      // Redirigir después de un breve retraso para que el usuario vea la notificación
       setTimeout(() => {
         navigate("/process");
       }, 2000);
@@ -163,84 +163,89 @@ const ExternalDefenseStage: FC<ExternalDefenseStageProps> = ({ onPrevious }) => 
 
   return (
     <>
-      <div className="txt1">{"Etapa Final: Defensa Externa"}</div>
+      <StageTitle 
+        title="Etapa Final: Defensa Externa" 
+        disabled={true}
+      />
 
-      <form onSubmit={formik.handleSubmit} className="mx-16 ">
-        <Box>
-          <Grid container spacing={2}>
-            <Grid item xs={6} marginTop={5}>
-              <ProfessorAutocomplete
-                disabled={editMode}
-                value={String(formik.values.president)}
-                onChange={handlePresidentChange}
-                id="president"
-                label="Seleccionar Presidente"
-              />
-              {formik.touched.president && formik.errors.president ? (
-                <div className="text-red-1 text-xs mt-1">{String(formik.errors.president)}</div>
-              ) : null}
-            </Grid>
-
-            <Grid item xs={6} marginTop={5}>
-              <ProfessorAutocomplete
-                disabled={editMode}
-                value={String(formik.values.firstJuror)}
-                onChange={handleFirstJurorChange}
-                id="firstJuror"
-                label="Seleccionar Primer Jurado"
-              />
-              {formik.touched.firstJuror && formik.errors.firstJuror ? (
-                <div className="text-red-1 text-xs mt-1">{String(formik.errors.firstJuror)}</div>
-              ) : null}
-            </Grid>
-
-            <Grid item xs={6} marginTop={5}>
-              <ProfessorAutocomplete
-                disabled={editMode}
-                value={String(formik.values.secondJuror)}
-                onChange={handleSecondJurorChange}
-                id="secondJuror"
-                label="Seleccionar Segundo Jurado"
-              />
-              {formik.touched.secondJuror && formik.errors.secondJuror ? (
-                <div className="text-red-1 text-xs mt-1">{String(formik.errors.secondJuror)}</div>
-              ) : null}
-              {!uniqueJurors && (
-                <div className="text-red-1 text-xs mt-1">{"Los jurados deben ser distintos"}</div>
-              )}
-            </Grid>
-
-            <Grid item xs={12} sm={6} marginTop={5}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label="Fecha de Defensa"
-                  value={formik.values.date}
-                  onChange={handleDateChange}
-                  format="DD/MM/YYYY"
-                  minDate={currentDate}
-                  maxDate={currentDate.add(1, "year")}
-                  slotProps={{
-                    textField: {
-                      fullWidth: true,
-                      onBlur: () => formik.setFieldTouched("date", true),
-                      error: formik.touched.date && Boolean(formik.errors.date),
-                      helperText: formik.touched.date && formik.errors.date,
-                    },
-                  }}
+      <StageContainer>
+        <form onSubmit={formik.handleSubmit}>
+          <Box>
+            <Grid container spacing={2}>
+              <Grid item xs={6} marginTop={5}>
+                <ProfessorAutocomplete
+                  disabled={editMode}
+                  value={String(formik.values.president)}
+                  onChange={handlePresidentChange}
+                  id="president"
+                  label="Seleccionar Presidente"
                 />
-              </LocalizationProvider>
+                {formik.touched.president && formik.errors.president ? (
+                  <div className="text-red-1 text-xs mt-1">{String(formik.errors.president)}</div>
+                ) : null}
+              </Grid>
+
+              <Grid item xs={6} marginTop={5}>
+                <ProfessorAutocomplete
+                  disabled={editMode}
+                  value={String(formik.values.firstJuror)}
+                  onChange={handleFirstJurorChange}
+                  id="firstJuror"
+                  label="Seleccionar Primer Jurado"
+                />
+                {formik.touched.firstJuror && formik.errors.firstJuror ? (
+                  <div className="text-red-1 text-xs mt-1">{String(formik.errors.firstJuror)}</div>
+                ) : null}
+              </Grid>
+
+              <Grid item xs={6} marginTop={5}>
+                <ProfessorAutocomplete
+                  disabled={editMode}
+                  value={String(formik.values.secondJuror)}
+                  onChange={handleSecondJurorChange}
+                  id="secondJuror"
+                  label="Seleccionar Segundo Jurado"
+                />
+                {formik.touched.secondJuror && formik.errors.secondJuror ? (
+                  <div className="text-red-1 text-xs mt-1">{String(formik.errors.secondJuror)}</div>
+                ) : null}
+                {!uniqueJurors && (
+                  <div className="text-red-1 text-xs mt-1">{"Los jurados deben ser distintos"}</div>
+                )}
+              </Grid>
+
+              <Grid item xs={12} sm={6} marginTop={5}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="Fecha de Defensa"
+                    value={formik.values.date}
+                    onChange={handleDateChange}
+                    format="DD/MM/YYYY"
+                    minDate={currentDate}
+                    maxDate={currentDate.add(1, "year")}
+                    slotProps={{
+                      textField: {
+                        fullWidth: true,
+                        onBlur: () => formik.setFieldTouched("date", true),
+                        error: formik.touched.date && Boolean(formik.errors.date),
+                        helperText: formik.touched.date && formik.errors.date,
+                      },
+                    }}
+                  />
+                </LocalizationProvider>
+              </Grid>
             </Grid>
-          </Grid>
-        </Box>
-        <Box display="flex" justifyContent="space-between" pt={5}>
-          <Button type="button" onClick={onPrevious} variant="contained" color="secondary">
-            {"Anterior"}
-          </Button>
-          <Button type="submit" variant="contained" color="primary" disabled={!uniqueJurors}>
-            {"Finalizar"}
-          </Button>
-        </Box>
-      </form>
+          </Box>
+          <Box display="flex" justifyContent="space-between" pt={5}>
+            <Button type="button" onClick={onPrevious} variant="contained" color="secondary">
+              {"Anterior"}
+            </Button>
+            <Button type="submit" variant="contained" color="primary" disabled={!uniqueJurors}>
+              {"Finalizar"}
+            </Button>
+          </Box>
+        </form>
+      </StageContainer>
       {showModal && (
         <ConfirmModal
           step={steps[4]}
