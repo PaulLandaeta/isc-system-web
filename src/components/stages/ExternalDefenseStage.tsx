@@ -102,10 +102,8 @@ const ExternalDefenseStage: FC<ExternalDefenseStageProps> = ({ onPrevious }) => 
       await saveStage(formik.values);
       setShowModal(false);
 
-      // Mostrar notificación de éxito
       setShowSuccessSnackbar(true);
 
-      // Redirigir después de un breve retraso para que el usuario vea la notificación
       setTimeout(() => {
         navigate("/process");
       }, 2000);

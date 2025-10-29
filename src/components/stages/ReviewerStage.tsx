@@ -140,7 +140,6 @@ const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) => {
       if (canApproveStage()) {
         setShowModal(true);
       } else {
-        // Will be handled after formik is defined
       }
     },
   });
@@ -210,7 +209,6 @@ const ReviewerStage: FC<ReviewerStageProps> = ({ onPrevious, onNext }) => {
         onNext();
       }
     } catch (error) {
-      // Error saving stage
       setErrorMessage("Error al guardar los datos. Por favor, intente nuevamente.");
       setShowErrorSnackbar(true);
     } finally {

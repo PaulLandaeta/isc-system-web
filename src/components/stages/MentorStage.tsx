@@ -40,7 +40,7 @@ const MentorStage: FC<InternalDefenseStageProps> = ({ onPrevious, onNext }) => {
     if (canApproveStage) {
       setShowModal(true);
     } else {
-      // saveStage will be defined below
+      saveStage();
     }
   });
 
@@ -73,7 +73,7 @@ const MentorStage: FC<InternalDefenseStageProps> = ({ onPrevious, onNext }) => {
         onNext();
       }
     } catch (error) {
-      // Error updating process
+      console.error("Error updating process:", error);
     } finally {
       setLoading(false);
     }

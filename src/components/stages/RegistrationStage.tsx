@@ -85,7 +85,6 @@ const RegistrationStage: FC<RegistrationStageProps> = ({ onNext }) => {
     return isApproved || isLaterStage;
   }, [studentProcess]);
 
-  // Actualizar el estado de solo lectura cuando cambie el proceso
   useEffect(() => {
     setReadOnly(checkSeminarApproved());
   }, [checkSeminarApproved]);
@@ -109,21 +108,17 @@ const RegistrationStage: FC<RegistrationStageProps> = ({ onNext }) => {
         return;
       }
 
-      // Volver a verificar el estado de aprobación antes de guardar
       if (checkSeminarApproved()) {
         return;
       }
 
       try {
-        // Primero crear una copia del proceso para no mutar el estado directamente
         const updatedProcess = { ...studentProcess };
         updatedProcess.modality_id = mode;
         updatedProcess.period = period;
 
-        // Intentar actualizar en el backend primero
         await updateProcess(updatedProcess);
 
-        // Si la actualización fue exitosa, actualizar el estado local
         setProcess(updatedProcess);
         onNext();
       } catch (error) {
@@ -145,7 +140,6 @@ const RegistrationStage: FC<RegistrationStageProps> = ({ onNext }) => {
       })
     ),
     onSubmit: () => {
-      // No permitir envío del formulario si está en modo solo lectura
       if (readOnly) {
         return;
       }

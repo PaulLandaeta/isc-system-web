@@ -88,7 +88,6 @@ const InternalDefenseStage: FC<InternalDefenseStageProps> = ({ onPrevious, onNex
     formik.setFieldValue("date", value);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const downloadEditedPDF = async (values: any) => {
     try {
       const [year, month, day, hour, minute] = values.date
@@ -120,7 +119,6 @@ const InternalDefenseStage: FC<InternalDefenseStageProps> = ({ onPrevious, onNex
 
       downloadFile(pdfBlob, "Acta_Defensa_Interna_de_Seminario_de_Grado_V1.1.pdf");
     } catch (error) {
-      // Error handling for PDF download
     }
   };
 
