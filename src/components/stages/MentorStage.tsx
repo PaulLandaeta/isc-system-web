@@ -50,7 +50,7 @@ const MentorStage: FC<InternalDefenseStageProps> = ({ onPrevious, onNext }) => {
 
     setLoading(true);
 
-    const { mentor, mentorName, tutorDesignationLetterSubmitted, dateTutorAssignament } =
+    const { mentor, mentorName, tutorDesignationLetterSubmitted, date_tutor_assignament } =
       formik.values;
 
     const updatedProcess = {
@@ -59,7 +59,7 @@ const MentorStage: FC<InternalDefenseStageProps> = ({ onPrevious, onNext }) => {
       tutor_approval: formik.values.tutorApprovalLetterSubmitted,
       tutor_id: Number(mentor),
       tutor_name: mentorName,
-      date_tutor_assignament: dateTutorAssignament ? dayjs(dateTutorAssignament) : null,
+      date_tutor_assignament: date_tutor_assignament ? dayjs(date_tutor_assignament) : null,
       ...(canApproveStage && {
         stage_id: 2,
         tutor_approval: true,
