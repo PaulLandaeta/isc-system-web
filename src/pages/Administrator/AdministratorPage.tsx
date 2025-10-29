@@ -14,7 +14,6 @@ const AdministratorPage = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [roles, setRoles] = useState<Role[]>([]);
   const [title, setTitle] = useState("");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const isSmall = useMediaQuery((theme: any) => theme.breakpoints.down("md"));
   const [currentRole, setCurrentRole] = useState<Role>({
     name: "",
@@ -27,7 +26,6 @@ const AdministratorPage = () => {
     console.log("Raw roles response:", rolesResponse);
     const rolesFetched: Role[] = [];
 
-    // Asegurarse de que tenemos datos válidos
     if (!rolesResponse || typeof rolesResponse !== "object" || !("data" in rolesResponse)) {
       console.warn("No data in response");
       return rolesFetched;
@@ -36,7 +34,6 @@ const AdministratorPage = () => {
     const responseData = (rolesResponse as { data: Record<string, unknown> }).data;
     console.log("Full API response:", JSON.stringify(rolesResponse, null, 2));
 
-    // Procesar los roles del objeto data (formato: { "NombreRol": { id, disabled, permissions } })
     Object.entries(responseData).forEach(([roleName, roleData]) => {
       console.log("Processing role:", roleName, JSON.stringify(roleData, null, 2));
       if (roleData && typeof roleData === "object" && "id" in roleData) {
@@ -85,7 +82,6 @@ const AdministratorPage = () => {
         const created = await addRole({ name: roleName, category });
         console.log("New role created:", created);
 
-        // Actualizar inmediatamente el estado local para reflejar el nuevo rol
         const optimisticRole: Role = {
           id: created?.id ?? Date.now(),
           name: roleName,
@@ -102,7 +98,6 @@ const AdministratorPage = () => {
         setTitle(roleName);
         setCurrentRole(optimisticRole);
 
-        // Re-sincronizar con servidor en background
         try {
           const updated = await getRoles();
           const rolesFetched = extractRoles(updated);

@@ -38,8 +38,7 @@ const AddTextModal: FC<AddTextModalProps> = ({
       }
     });
 
-    // Validación según el regex del backend: /^[a-zA-Z]{4,16}$/
-    const nameRegex = /^[a-zA-Z]{4,16}$/;
+        const nameRegex = /^[a-zA-Z]{4,16}$/;
     const isValidName = nameRegex.test(name.trim());
 
     if (!name.trim()) {
