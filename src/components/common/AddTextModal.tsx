@@ -37,12 +37,20 @@ const AddTextModal: FC<AddTextModalProps> = ({
         rolWithTheSameName = true;
       }
     });
+
+        const nameRegex = /^[a-zA-Z]{4,16}$/;
+    const isValidName = nameRegex.test(name.trim());
+
     if (!name.trim()) {
       setError("El nombre del rol no puede estar vacío");
+    } else if (!isValidName) {
+      setError(
+        "El nombre debe tener entre 4 y 16 letras (sin espacios, números o caracteres especiales)"
+      );
     } else if (rolWithTheSameName) {
       setError("Rol existente");
     } else {
-      onCreate(name, isTeacher ? "professor" : "student");
+      onCreate(name.trim(), isTeacher ? "professor" : "student");
       setIsVisible(false);
       setName("");
       setError(null);
@@ -75,78 +83,77 @@ const AddTextModal: FC<AddTextModalProps> = ({
 
   return (
     <MuiModal
-      open = {isVisible}
-      onClose = {toggleModal}
-      aria-labelledby = "create-modal-title"
-      aria-describedby = "create-modal-description"
+      open={isVisible}
+      onClose={toggleModal}
+      aria-labelledby="create-modal-title"
+      aria-describedby="create-modal-description"
     >
-      <Box className = "modal-box">
-        <IconButton sx = {{ position: "absolute", top: 6, left: 450 }} onClick = {toggleModal}>
-          <CancelIcon color = "primary" />
+      <Box className="modal-box">
+        <IconButton sx={{ position: "absolute", top: 6, left: 450 }} onClick={toggleModal}>
+          <CancelIcon color="primary" />
         </IconButton>
-        <Typography id = "create-modal-title" variant = "h5">
+        <Typography id="create-modal-title" variant="h5">
           {"Crear nuevo rol\r"}
         </Typography>
         <TextField
           fullWidth
-          value = {name}
-          onChange = {handleNameChange}
-          label = "Ingresa el nombre del nuevo rol"
-          variant = "outlined"
-          inputProps = {{ maxLength: 25 }}
-          sx = {{ marginTop: "20px" }}
-          error = {!!error}
-          helperText = {error}
+          value={name}
+          onChange={handleNameChange}
+          label="Ingresa el nombre del nuevo rol"
+          placeholder="Solo letras, 4-16 caracteres"
+          variant="outlined"
+          inputProps={{ maxLength: 16 }}
+          sx={{ marginTop: "20px" }}
+          error={!!error}
+          helperText={error}
         />
 
-        <Box sx = {{ textAlign: "center", paddingTop: 2 }}>
-          <Typography variant = "h6">{"¿A quién puedo asignar este rol?"}</Typography>
-          <Grid container sx = {{ padding: 2, justifyContent: "center" }} spacing = {2}>
-            <Grid item xs = {5} md = {6}>
-              <Card variant = "outlined">
-                <CardActionArea onClick = {handleStudentSelect}>
+        <Box sx={{ textAlign: "center", paddingTop: 2 }}>
+          <Typography variant="h6">{"¿A quién puedo asignar este rol?"}</Typography>
+          <Grid container sx={{ padding: 2, justifyContent: "center" }} spacing={2}>
+            <Grid item xs={5} md={6}>
+              <Card variant="outlined">
+                <CardActionArea onClick={handleStudentSelect}>
                   <CardContent
-                    sx = {{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                    sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
                   >
                     <CardMedia>
-                      <SchoolIcon sx = {{ fontSize: 100 }} color = "primary" />
+                      <SchoolIcon sx={{ fontSize: 100 }} color="primary" />
                     </CardMedia>
                     <Typography>{"Estudiante"}</Typography>
                   </CardContent>
-                  <Radio checked = {!isTeacher} disabled = {true} />
+                  <Radio checked={!isTeacher} disabled={true} />
                 </CardActionArea>
               </Card>
             </Grid>
-            <Grid item xs = {5} md = {6}>
-              <Card variant = "outlined">
-                <CardActionArea onClick = {handleTeacherSelect}>
+            <Grid item xs={5} md={6}>
+              <Card variant="outlined">
+                <CardActionArea onClick={handleTeacherSelect}>
                   <CardContent
-                    sx = {{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                    sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
                   >
                     <CardMedia>
-                      <WorkIcon sx = {{ fontSize: 100 }} color = "primary" />
+                      <WorkIcon sx={{ fontSize: 100 }} color="primary" />
                     </CardMedia>
                     <Typography>{"Docente"}</Typography>
                   </CardContent>
-                  <Radio checked = {isTeacher} disabled = {true} />
+                  <Radio checked={isTeacher} disabled={true} />
                 </CardActionArea>
               </Card>
             </Grid>
           </Grid>
         </Box>
 
-        <Box
-          display = "flex" justifyContent = "flex-end" mt = {2}
-          sx = {{ marginTop: "20px" }}>
+        <Box display="flex" justifyContent="flex-end" mt={2} sx={{ marginTop: "20px" }}>
           <Button
-            variant = "outlined"
-            color = "secondary"
-            onClick = {toggleModal}
-            sx = {{ marginRight: "10px" }}
+            variant="outlined"
+            color="secondary"
+            onClick={toggleModal}
+            sx={{ marginRight: "10px" }}
           >
             {"Cancelar\r"}
           </Button>
-          <Button variant = "contained" color = "primary" onClick = {handleCreate}>
+          <Button variant="contained" color="primary" onClick={handleCreate}>
             {"Crear\r"}
           </Button>
         </Box>
